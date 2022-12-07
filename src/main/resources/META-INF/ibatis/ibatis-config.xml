@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+ 
+<sqlMapConfig>
+
+	<!-- SQL 구문에 네임스페이스 사용을 활성화한다. -->
+	<settings useStatementNamespaces="true" />
+	
+	<!-- 데이터베이스 연결 정보 설정 -->
+	<transactionManager type="JDBC">
+		<dataSource type="SIMPLE">
+			<property name="JDBC.Driver" value="oracle.jdbc.OracleDriver" />
+			<property name="JDBC.ConnectionURL" value="jdbc:oracle:thin:@localhost:1521:xe" />
+			<property name="JDBC.Username" value="semi" />
+			<property name="JDBC.Password" value="zxcv1234" />
+		</dataSource>
+	</transactionManager>
+
+	<!-- SQL 매퍼 파일을 등록 가능한 알파벳 순으로 -->
+	<sqlMap resource="META-INF/ibatis/mappers/departments.xml" />
+	<sqlMap resource="META-INF/ibatis/mappers/employees.xml" />	
+
+</sqlMapConfig>
