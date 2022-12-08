@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="employees">
+
+	<select id="getEmployeeByNo" parameterClass="int" resultClass="com.semi.admin.vo.Employee">
+		select 
+			emp_no as no,
+			emp_id as id,
+			emp_password as password,
+			emp_photo as photo,
+			emp_name as name,
+			emp_email as email,
+			emp_phone as phone,
+			emp_dept_no as deptNo,
+			emp_position_no as positionNo,
+			emp_deleted as deleted,
+			emp_created_date as createdDate,
+			emp_updated_date as updatedDate,
+			emp_deleted_date as deletedDate
+		from
+			semi_employees
+		where
+			employee_no = #value#
+	</select>
+	
+	<select id="getTotalRows" resultClass="int">
+		select 
+			count(*)
+		from
+			semi_employees
+	</select>
+	
+	<select id="getEmployees" parameterClass="com.semi.util.Pagination" resultClass="com.semi.admin.vo.Employee">
+		select 
+			emp_no as no,
+			emp_id as id,
+			emp_password as password,
+			emp_photo as photo,
+			emp_name as name,
+			emp_email as email,
+			emp_phone as phone,
+			emp_dept_no as deptNo,
+			emp_position_no as positionNo,
+			emp_deleted as deleted,
+			emp_created_date as createdDate,
+			emp_updated_date as updatedDate,
+			emp_deleted_date as deletedDate
+		from (select
+				row_number() over (order by emp_no desc) row_numbers,
+				emp_no,
+				emp_id,
+				emp_password,
+				emp_photo,
+				emp_name,
+				emp_email,
+				emp_phone,
+				emp_dept_no,
+				emp_position_no,
+				emp_deleted,
+				emp_created_date,
+				emp_updated_date,
+				emp_deleted_date
+			from
+				semi_employees)
+		where
+			row_numbers between #begin# and #end#
+	</select>
+</sqlMap>
+
