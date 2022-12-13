@@ -11,7 +11,7 @@
 			emp_password as password,
 			emp_photo as photo,
 			emp_name as name,
-			emp_email as email,
+			emp_email as email, 
 			emp_phone as phone,
 			emp_dept_no as deptNo,
 			emp_position_no as positionNo,

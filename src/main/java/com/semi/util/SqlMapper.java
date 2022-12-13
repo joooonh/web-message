@@ -165,7 +165,7 @@ public class SqlMapper {
 			throw new RuntimeException(ex);
 		}
 	}
-	
+
 	
 	
 }

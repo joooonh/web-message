@@ -1,3 +1,7 @@
+<%@page import="com.semi.memo.vo.Memo"%>
+<%@page import="com.semi.memo.dao.MemoDao"%>
+<%@page import="java.util.List"%>
+<%@page import="com.semi.util.StringUtils"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -14,13 +18,20 @@
 <jsp:include page="../common/header.jsp">
 	<jsp:param name="menu" value="home"/>
 </jsp:include>
+<% 
+	int empNo = 1006; 
+	MemoDao memoDao= new MemoDao();
+ 	List<Memo> memoList= memoDao.selectSemiMemosByEmpNo(empNo);
+ 	
+ 	
+%>
 <div class="container-fluid my-3">
 	<div class="row">
 		<div class="col-2">
 			<div class="row mb-3">
 				<div class="col text-center">
 					<div class="btn-group" role="group">
-						<button class="btn btn-success px-4" id="btn-open-modal">새 메모 쓰기</button>
+						<button class="btn btn-success px-4">새 메모 쓰기</button>
 					</div>
 				</div>
 			</div>
@@ -33,6 +44,7 @@
 				  					<span class="caret caret-down">전체 메모</span>
 				    				<ul class="nested active">
 										<li><a href="" class="text-decoration-none text-dark">내 메모(기본)</a></li>
+										<li><a href="" class="text-decoration-none text-dark">중요 메모</a></li>
 										<li><a href="" class="text-decoration-none text-dark">사진 첨부 메모</a></li>
 										<li><a href="" class="text-decoration-none text-dark">스크랩</a></li>
 										<li><a href="" class="text-decoration-none text-dark">아이디어</a></li>
@@ -53,6 +65,7 @@
 							<select class="form-select form-select-sm" name="folderNo">
 								<option value=""> 전체 메모</option>
 								<option value=""> 내 메모</option>
+								<option value=""> 중요 메모</option>
 								<option value=""> 사진 첨부 메모</option>
 								<option value=""> 스크랩</option>
 								<option value=""> 아이디어</option>
@@ -77,10 +90,12 @@
 			<hr/>
 			<div class="row mb-2">
 				<div class="col">
-					<a href="" class="btn btn-outline-danger btn-sm">삭제</a>
+					<button class="btn btn-outline-danger btn-xs" id="btn-delete-memo">삭제</button>
+					<button class="btn btn-primary btn-xs" id="btn-register-memo">등록</button>
 					<select class="form-select form-select-xs w-150" name="folderNo">
 						<option value=""> 폴더 이동</option>						
 						<option value=""> 내 메모</option>
+						<option value=""> 중요 메모</option>
 						<option value=""> 사진 첨부 메모</option>
 						<option value=""> 스크랩</option>
 						<option value=""> 아이디어</option>
@@ -92,36 +107,47 @@
 				<div class="col p-3">
 					<div class="border bg-light p-3" >
 						<div class="row" style="height:600px; overflow: auto;">
-							<div class="col-2">
+                         <!--  -->
+							<div class="col-3 mb-3">
+								<form id="form-register-memo" method="post" action="register.jsp">
+									<input type="hidden" name="folderNo" value="100" />
+									<div class="card">
+										<div class="card-header">
+											간단한 메모는 여기에
+										</div>
+										<!--  -->
+										<div class="card-body" style="height:150px;">
+										<textarea rows="" class="form-control h-100 border-0" name="content">메모를 입력하세요.</textarea>
+										</div>
+									</div>
+								</form>
+							</div>
+							<form id="form-memo" class="d-inline" method="get" action="delete.jsp">
+<%
+	if (!memoList.isEmpty()) {
+		for (Memo memo :memoList) {
+%>	
+
+							<div class="col-3 mb-3">
 								<div class="card">
 									<div class="card-header">
-										<input type="checkbox" name="memoNo">
-										<small class="text-muted">2022.12.08</small>
+										<input type="checkbox" name="memoNo" value="<%=memo.getNo() %>">
+										<small class="text-muted"><%=StringUtils.dateToText(memo.getCreatedDate())  %></small>
 										<small class="float-end">
 											<a href=""><i class="bi bi-pencil-fill"></i></a>
-											<a href=""><i class="bi bi-star"></i></a>
+											<a href="important.jsp?memoNo=<%=memo.getNo() %>"><i class="bi bi-star"></i></a>
 										</small>
 									</div>
-									<div class="card-body" style="height:200px;">
-										<p class="card-text">내용입니다.</p>
+									<div class="card-body" style="height:150px;">
+										<p class="card-text"><%=memo.getContent() %></p>
 									</div>
 								</div>
 							</div>
-							<div class="col-2">
-								<div class="card">
-									<div class="card-header">
-										<input type="checkbox" name="memoNo">
-										<small class="text-muted">2022.12.08</small>
-										<small class="float-end">
-											<a href=""><i class="bi bi-pencil-fill"></i></a>
-											<a href=""><i class="bi bi-star"></i></a>
-										</small>
-									</div>
-									<div class="card-body" style="height:200px;">
-										<p class="card-text">내용입니다.</p>
-									</div>
-								</div>
-							</div>
+<%
+		}
+	}
+%>
+						</form>
 						</div>
 					</div>
 				</div>
@@ -129,90 +155,28 @@
 		</div>
 	</div>
 </div>
-<div class="modal" tabindex="-1" id="modal-form-message">
-	<div class="modal-dialog modal-lg">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title">메세지 작성폼</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<form class="border p-3 bg-light">
-					<div class="row mb-2">
-						<div class="col-sm-8 offset-sm-2">
-							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="checkbox" name="me" value="Y">
-								<label class="form-check-label">나에게 쓰는 메세지</label>
-							</div>
-						</div>
-					</div>
-					<div class="row mb-2">
-						<div class="col-sm-8 offset-sm-2">
-							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="checkbox" name="sentBox" value="Y" checked="checked">
-								<label class="form-check-label">보낸 메세지함 저장 여부</label>
-							</div>
-						</div>
-					</div>
-					<div class="row mb-2">
-						<label class="col-sm-2 col-form-label col-form-label-sm">메세지 종류</label>
-						<div class="col-sm-8">
-							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="type" value="E" checked>
-								<label class="form-check-label">일반 메세지</label>
-							</div>
-							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="type" value="D">
-								<label class="form-check-label">부서 메세지</label>
-							</div>
-							<div class="form-check form-check-inline">
-								<input class="form-check-input" type="radio" name="type" value="S">
-								<label class="form-check-label">공유 메세지</label>
-							</div>
-						</div>
-					</div>
-					<div class="row mb-2">
-						<label class="col-sm-2 col-form-label col-form-label-sm">수신자</label>
-						<div class="col-sm-8">
-							<input type="text" class="form-control form-control-sm">
-						</div>
-						<div class="col-sm-2">
-							<button type="button" class="btn btn-secondary btn-xs mt-0">선택하기</button>
-						</div>
-					</div>
-					<div class="row mb-2">
-						<label class="col-sm-2 col-form-label col-form-label-sm">내용</label>
-						<div class="col-sm-10">
-							<textarea rows="5" class="form-control" name="content"></textarea>
-						</div>
-					</div>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary btn-xs" data-bs-dismiss="modal">닫기</button>
-				<button type="button" class="btn btn-primary btn-xs">보내기</button>
-			</div>
-		</div>
-	</div>
-</div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 <script type="text/javascript">
-$(function() {
-	var messageFormModal = new bootstrap.Modal("#modal-form-message");
+// 등록버튼 클릭했을 때 실행되는 이벤트 핸들러 함수 등록 -> function() {}
+$("#btn-register-memo").click(function() {
+	// 폼의 입력값이 서버로 제출되도록 선택한 폼에서 submit 이벤트를 강제로 발생시킨다.
+	$("#form-register-memo").trigger("submit")
+});
+
+$("#btn-delete-memo").click(function() {
 	
-	$("#btn-open-modal-1").click(function() {
-		$(":checkbox[name=me]").prop("checked", false);
-		$(":checkbox[name=type][value=E]").prop("checked", true);
-		messageFormModal.show();
-	});
-	$("#btn-open-modal-2").click(function() {
-		$(":checkbox[name=me]").prop("checked", true);
-		$(":checkbox[name=type][value=E]").prop("checked", true);
-		messageFormModal.show();
-	});
-		
-})
+    var checkboxLength = $(":checkbox[name=memoNo]:checked").length;
+    if (checkboxLength == 0) {
+    	alert("체크박스를 하나이상 체크하세요");
+    	return false;
+    }
+    
+   $("#form-memo").trigger("submit");
+	
+});
+
+
 </script>
 </body>
 </html>
