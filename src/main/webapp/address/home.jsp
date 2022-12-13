@@ -38,11 +38,14 @@
 	<jsp:param name="menu" value="address"/>
 </jsp:include>
 <%
+	int empNo = 1002;
 	// 유저아이디 (로그인한 유저의 주소록)
 	// String loginUserId = (String) session.getAttribute("login_user_id"); 
 	
 	// 현재 페이지 
 	int currentPage = StringUtils.stringToInt(request.getParameter("page"), 1);
+	String opt = StringUtils.nullToBlank(request.getParameter("opt"));
+	String keyword = StringUtils.nullToBlank(request.getParameter("keyword"));
 
 	// 전체 페이지 (이름 기준)
 	BookDao bookDao = new BookDao();
@@ -55,33 +58,6 @@
 	Pagination pagination = new Pagination(currentPage, totalRows);
 	
 	Map<String, Object> param = new HashMap<>(); 
-	// param.put("userId", loginUserId)
-	param.put("begin", pagination.getBegin()); 
-	param.put("end", pagination.getEnd()); 
-	
-	List<Book> bookList = bookDao.getBooks(param); 
-%>
-<div class="container-fluid my-3">
-<%
-
-/* 221213 충돌로인한 주석
-	// 로그인한 직원의 직원번호
-	int empNo = 1002;
-	
-	String opt = StringUtils.nullToBlank(request.getParameter("opt"));
-	String keyword = StringUtils.nullToBlank(request.getParameter("keyword"));
-
-	AddressBookDao addressBookDao = new AddressBookDao();
-
-	// 현재 페이지 번호를 저장한다.
-	int currentPage = StringUtils.stringToInt(request.getParameter("page"), 1);
-	// 직원번호에 해당하고 삭제여부가 'Y'인 주소록의 총 갯수
-	int totalRows = addressBookDao.totalRows(empNo);
-	
-	// 페이징 10개목록 5개페이지
-	Pagination pagination = new Pagination(currentPage, totalRows);
-	
-	Map<String, Object> param = new HashMap<>();
 	if (!opt.isEmpty()){
 		param.put("opt", opt);
 	}
@@ -89,17 +65,16 @@
 		param.put("keyword", keyword);
 	} 
 	param.put("empNo", empNo);
-	param.put("begin", pagination.getBegin());
-	param.put("end", pagination.getEnd());
-  // 221213 충돌로인한 주석*/
-
-	int empNo = 1000;
-
+	
+	param.put("begin", pagination.getBegin()); 
+	param.put("end", pagination.getEnd()); 
+	
+	List<Book> bookList = bookDao.getBooks(param); 
+	
 	AddressGroupDao addGroupDao = new AddressGroupDao();
 	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(empNo);
-
-	
 %>
+<div class="container-fluid my-3">
 	<div class="row">
 		<div class="col-2">
 			<div class="row mb-3">
