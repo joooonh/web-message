@@ -13,7 +13,7 @@ public class Group {
 	private Date updatedDate;	// 수정일
 	private Date deletedDate;	// 삭제일
 	private int empNo;			// 직원번호
-	
+
 	public int getNo() {
 		return no;
 	}
@@ -62,6 +62,7 @@ public class Group {
 	public void setDeletedDate(Date deletedDate) {
 		this.deletedDate = deletedDate;
 	}
+
 	public int getEmpNo() {
 		return empNo;
 	}
