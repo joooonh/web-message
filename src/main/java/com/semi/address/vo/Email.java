@@ -3,7 +3,8 @@ package com.semi.address.vo;
 public class Email {
 
 	private String email;
-	private String defaultYN;
+	private String addr;
+	private String defaultYN; 
 	private int bookNo;
 	
 	public String getEmail() {
@@ -11,6 +12,13 @@ public class Email {
 	}
 	public void setEmail(String email) {
 		this.email = email;
+  }
+	public String getAddr() {
+		return addr;
+	}
+	public void setAddr(String addr) {
+		this.addr = addr;
+
 	}
 	public String getDefaultYN() {
 		return defaultYN;

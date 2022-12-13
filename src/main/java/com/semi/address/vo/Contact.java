@@ -3,7 +3,7 @@ package com.semi.address.vo;
 public class Contact {
 
 	private String type;
-	private String tel;
+	private String tel; 
 	private String defaultYN;
 	private int bookNo;
 	

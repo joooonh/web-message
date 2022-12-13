@@ -5,8 +5,8 @@ public class Address {
 	private String type;
 	private String defaultYN;
 	private String zipcode;
-	private String basic;
-	private String detail;
+	private String basic; 
+	private String detail; 
 	private int bookNo;
 	
 	public String getType() {
@@ -44,5 +44,5 @@ public class Address {
 	}
 	public void setBookNo(int bookNo) {
 		this.bookNo = bookNo;
-	}	
+	}
 }

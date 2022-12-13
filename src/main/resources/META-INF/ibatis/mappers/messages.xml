@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="messages">
+
+	<select id="getMessageNo" resultClass="int">
+		SELECT SEMI_MESSAGES_SEQ.NEXTVAL
+		FROM DUAL
+	</select>
+	
+	<insert id="sendMessage" parameterClass="com.semi.message.vo.Message">
+		INSERT INTO SEMI_MESSAGES
+    		(MESSAGE_NO, MESSAGE_ME, MESSAGE_SENT_BOX, MESSAGE_CONTENT, MESSAGE_SEND_EMP_NO, MESSAGE_TYPE)
+		VALUES
+    		(#messageNo#, #messageMe#, #messageSentBox#, #messageContent#, #messageSendEmpNo#, #messageType#)
+	</insert>
+	
+	<insert id="receiveMessageEmployee" parameterClass="com.semi.message.vo.MessageReceivers">
+		INSERT INTO SEMI_MESSAGE_RECEIVERS
+    		(MESSAGE_NO, EMP_NO)
+		VALUES
+    		(#messageNo#, #messageReceiveEmpNo#)
+	</insert>
+	
+	
+	
+</sqlMap>
+
+
+
+
+
+

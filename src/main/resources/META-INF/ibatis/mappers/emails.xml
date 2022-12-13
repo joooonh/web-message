@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="emails">
+	
+	<select id="getEmailsByBookNo" parameterClass="int" resultClass="com.semi.address.vo.Email">
+		select 
+			email_addr			as addr,
+			email_default_yn	as defaultYN,
+			addr_book_no		as bookNo
+		from
+			semi_address_emails
+		where
+			addr_book_no = #value#
+	</select>
+	
+	<select id="getDefaultEmailByBookNo" parameterClass="int" resultClass="com.semi.address.vo.Email">
+		select 
+			email_addr			as addr,
+			email_default_yn	as defaultYN,
+			addr_book_no		as bookNo
+		from
+			semi_address_emails
+		where
+			email_default_yn = 'Y'
+		and
+			addr_book_no = #value#
+	</select>
+	
+	<!-- 사진, groupNo 넣기 -->
+	<insert id="insertEmail" parameterClass="com.semi.address.vo.Email">
+		insert into semi_address_emails
+			(email_addr, addr_book_no)
+		values
+			(#addr#, #bookNo#)
+	</insert>
+	
+</sqlMap>
+
