@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="books">
+
+	<select id="getSequence" resultClass="int">
+		select 
+			semi_address_books_seq.nextval
+		from 
+			dual
+	</select>
+	
+	<select id="getTotalRows" resultClass="int">
+		select
+			count(*)
+		from
+			semi_address_contacts
+	</select>
+	
+	<select id="getBooks" parameterClass="map" resultClass="com.semi.address.vo.Book">
+		select
+			*
+		from
+			(select
+				row_number() over(order by addr_book_no desc) rowNumber,
+				addr_book_no 		as bookNo, 
+				addr_first_name		as firstName,
+				addr_last_name		as lastName, 
+				addr_photo			as photo,
+				group_no			as groupNo, 
+				addr_company		as company,
+				addr_dept			as dept,
+				addr_position		as position,
+				addr_memo			as memo,
+				addr_important		as important,
+				addr_deleted		as deleted,
+				addr_created_date	as createdDate,
+				addr_updated_date	as updatedDate,
+				addr_deleted_date	as deletedDate,
+				emp_no				as employeeNo
+			  from
+			  	semi_address_books)
+		where
+			rowNumber between #begin# and #end#
+	</select>
+	
+	<!-- 사진 넣기 -->
+	<insert id="insertBook" parameterClass="com.semi.address.vo.Book">
+		insert into semi_address_books
+			(addr_book_no, addr_first_name, addr_last_name, group_no, addr_company, addr_dept, addr_position, addr_memo)
+		values
+			(#bookNo#, #firstName#, #lastName#, #groupNo#, #company#, #dept#, #position#, #memo#)
+	</insert>
+	
+
+	
+</sqlMap>
+

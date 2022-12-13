@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="memos">
+
+  <select id="selectSemiMemosByEmpNo" parameterClass="int" resultClass="com.semi.memo.vo.Memo">
+     select 
+     	memo_no as no,
+     	memo_folder_no as folderNo,
+     	memo_emp_no as empNo,
+     	memo_content as content,
+     	memo_created_date as createdDate
+     from semi_memos
+     where memo_emp_no=#value#
+     order by memo_no desc
+  </select>
+
+   
+   <insert id="insertMemo" parameterClass="com.semi.memo.vo.Memo">
+		insert into semi_memos
+		(memo_no, memo_folder_no, memo_emp_no, memo_content)
+		values
+		(semi_memo_seq.nextval, #folderNo#, #empNo#, #content#)
+	</insert>
+	
+	<delete id="deleteMemoByNo" parameterClass="int">
+		delete from
+			semi_memos
+		where
+			memo_no = #value#
+	</delete>
+	
+	
+  
+</sqlMap>
+
+		

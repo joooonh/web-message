@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="contacts">
+	
+	<select id="getContactsByBookNo" parameterClass="int" resultClass="com.semi.address.vo.Contact">
+		select 
+			contact_type		as type,
+			contact_tel			as tel,
+			contact_default_yn	as defaultYN,
+			addr_book_no		as bookNo
+		from
+			semi_address_contacts
+		where
+			addr_book_no = #value#
+	</select>
+	
+	<select id="getDefaultContactByBookNo" parameterClass="int" resultClass="com.semi.address.vo.Contact">
+		select 
+			contact_type		as type,
+			contact_tel			as tel,
+			contact_default_yn	as defaultYN,
+			addr_book_no		as bookNo 
+		from 
+			semi_address_contacts
+		where 
+			contact_default_yn = 'Y'
+		and 
+			addr_book_no = #value#
+	</select>
+	
+	<insert id="insertContact" parameterClass="com.semi.address.vo.Contact">
+		insert into semi_address_contacts
+			(contact_type, contact_tel, addr_book_no)
+		values
+			(#type#, #tel#, #bookNo#)
+	</insert>
+	
+</sqlMap>
+

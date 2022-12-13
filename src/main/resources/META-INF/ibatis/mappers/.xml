@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap>
+
+	<!-- 
+		상품번호로 상품정보 하나를 조회하는 쿼리
+			SQL 실행에 필요한 값 : 상품번호 (int)
+			SQL 실행 후 획득되는 값 : 상품정보 한 행 (Product)
+			
+			public Product getProductByNo(int productNo) {
+				return (Product) SqlMapper.selectOne("getProductByNo", productNo);
+			}
+			* SqlMapper.selectOne() 메소드는 resultClass 속성에 지정된 객체를 생성해서 조회결과를 저장하고, 그 객체를 반환한다.
+			* SqlMapper.selectOne() 메소드는 조회결과가 오직 한 행만 조회될 때 사용하는 메소드다.
+				- 조회조건의 값이 기본키 컬럼의 값, 고유키 컬럼의 값일 때만 조회결과가 한 행만 조회된다.
+	 -->
+	<select id="getProductByNo" parameterClass="int" resultClass="com.sample.vo.Product">
+		select
+			product_no 				as no,
+			product_name 			as name,
+			product_maker 			as maker, 
+			product_price 			as price,
+			product_discount_rate 	as discountRate,
+			product_stock 			as stock,
+			product_on_sell 		as onSell,
+			product_created_date 	as createdDate,
+			product_updated_date 	as updatedDate
+		from
+			sample_products
+		where
+			product_no = #value#
+	</select>
+	
+	<!-- 
+		모든 상품정보를 조회하는 쿼리
+			SQL 실행에 필요한 값 : 없음
+			SQL 실행 후 획득되는 값 : 상품정보 여러 행 (List<Product>)
+			
+			public List<Product> getAllProducts() {
+				return (List<Product>) SqlMapper.selectList("getAllProducts");
+			}
+			* SqlMapper.selectList() 메소드는 List객체를 생성해서 반환한다.
+			* 조회된 모든 행에 대해서 아래의 작업을 반복수행한다.
+				resultClass 속성에 지정된 객체를 생성해서 조회결과를 한 행씩 저장하고, 그 객체를 List객체에 저장한다.
+			* SqlMapper.selectList() 메소드는 조회결과가 여러 행 조회될 때 사용하는 메소드다.
+				- 조회조건의 값이 기본키 컬럼의 값, 고유키 컬럼의 값이 아닐 때는 조회결과가 여러 행 이다.
+	 -->
+	<select id="getAllProducts" resultClass="com.sample.vo.Product">
+		select 
+			product_no 				as no,
+			product_name 			as name,
+			product_maker 			as maker, 
+			product_price 			as price,
+			product_discount_rate 	as discountRate,
+			product_stock 			as stock,
+			product_on_sell 		as onSell,
+			product_created_date 	as createdDate,
+			product_updated_date 	as updatedDate
+		from
+			sample_products
+		order by
+			product_no desc
+	</select>
+	
+	<!-- 
+		새 상품정보를 저장하는 쿼리
+			SQL 실행에 필요한 값 : 상품정보(Product)
+			
+			public void insertProduct(Product product) {
+				SqlMapper.insert("insertProduct", product);
+			}
+			* SqlMapper.insert() 메소드는 INSERT문을 실행한다.
+			* SqlMapper.insert() 메소드는 반환값이 없다.
+	 -->
+	<insert id="insertProduct" parameterClass="com.sample.vo.Product">
+		insert into sample_products
+			(product_no, product_name, product_maker, product_price, product_discount_rate, product_stock)
+		values
+			(sample_products_seq.nextval, #name#, #maker#, #price#, #discountRate#, #stock#)
+	</insert>
+	
+</sqlMap>
+
+
+
+
+
+
