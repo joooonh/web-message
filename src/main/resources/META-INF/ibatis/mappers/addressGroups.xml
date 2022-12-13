@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="addressGroups">
+
+	<insert id="insertAddressGroup" parameterClass="com.semi.address.vo.Group">
+		insert into semi_address_groups
+			(group_no, group_name, emp_no, group_seq)
+		values
+			(semi_addr_groups_seq.nextval, #name#, #empNo#, (select nvl(max(group_seq) + 1, 1)
+                                                             from semi_address_groups
+                                                             where emp_no = #empNo#))
+	</insert>
+	
+	<select id="getAddGroupsByEmpNo" parameterClass="int" resultClass="com.semi.address.vo.Group">
+		select
+			group_no as no,
+			group_name as name,
+			group_address_count as addressCount,
+			group_seq as seq,
+			group_deleted as deleted,
+			group_created_date as createdDate,
+			group_updated_date as updatedDate,
+			group_deleted_date as deletedDate,
+			emp_no as empNo
+		from
+			semi_address_groups
+		where
+			emp_no = #value#
+	</select>
+	
+	<select id="getAddressGroups" parameterClass="map" resultClass="com.semi.address.vo.Group">
+		select
+			group_no as no,
+			group_name as name,
+			group_address_count as addressCount,
+			group_seq as seq,
+			group_deleted as deleted,
+			group_created_date as createdDate,
+			group_updated_date as updatedDate,
+			group_deleted_date as deletedDate,
+			emp_no as empNo
+		from (select
+				row_number() over (order by group_no desc) row_numbers,
+				group_no,
+				group_name,
+				group_address_count,
+				group_seq,
+				group_deleted,
+				group_created_date,
+				group_updated_date,
+				group_deleted_date,
+				emp_no
+			from
+				semi_address_groups
+			where
+				group_deleted = 'N'
+				)
+		where
+			row_numbers between #begin# and #end#
+	</select>
+	
+	<select id="getAddressGroupByNo" parameterClass="int" resultClass="com.semi.address.vo.Group">
+		select
+			group_no as no,
+			group_name as name,
+			group_address_count as addressCount,
+			group_seq as seq,
+			group_deleted as deleted,
+			group_created_date as createdDate,
+			group_updated_date as updatedDate,
+			group_deleted_date as deletedDate,
+			emp_no as empNo
+		from
+			semi_address_groups
+		where
+			group_no = #value#
+	</select>
+</sqlMap>
+
