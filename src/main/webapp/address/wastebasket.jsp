@@ -12,7 +12,7 @@
 	
 	// 직원번호로 삭제여부가 'Y'인 게시글을 addressList에 담는다.
 	AddressBookDao addressDao = new AddressBookDao();
-	List<AddressDto> addressList = addressDao.getAddressByEmpNoFindY(empNo);
+	List<AddressDto> addressList = addressDao.getAddressByEmpNoFindYList(empNo);
 	
 	Gson gson = new GsonBuilder().serializeNulls().setDateFormat("yyyy년 M월 d일").create();
 	String json = gson.toJson(addressList);

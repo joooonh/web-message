@@ -1,6 +1,7 @@
 package com.semi.address.vo;
 
 public class Address {
+
 	private String type;
 	private String defaultYN;
 	private String zipcode;

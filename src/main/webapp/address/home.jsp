@@ -1,3 +1,5 @@
+<%@page import="com.semi.address.dto.AddressDto"%>
+<%@page import="com.semi.address.dao.AddressBookDao"%>
 
 <%@page import="com.semi.address.vo.Contact"%>
 <%@page import="com.semi.address.vo.Email"%>
@@ -24,10 +26,16 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
 <link href="/web-message/resources/css/style.css" rel="stylesheet">
 <title>사내 메세지 애플리케이션</title>
+<style>
+	.text-border{
+		color: #fff !important;
+	    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black!important
+    }
+</style>
 </head>
 <body>
 <jsp:include page="../common/header.jsp">
-	<jsp:param name="menu" value="home"/>
+	<jsp:param name="menu" value="address"/>
 </jsp:include>
 <%
 	// 유저아이디 (로그인한 유저의 주소록)
@@ -55,10 +63,41 @@
 %>
 <div class="container-fluid my-3">
 <%
+
+/* 221213 충돌로인한 주석
+	// 로그인한 직원의 직원번호
+	int empNo = 1002;
+	
+	String opt = StringUtils.nullToBlank(request.getParameter("opt"));
+	String keyword = StringUtils.nullToBlank(request.getParameter("keyword"));
+
+	AddressBookDao addressBookDao = new AddressBookDao();
+
+	// 현재 페이지 번호를 저장한다.
+	int currentPage = StringUtils.stringToInt(request.getParameter("page"), 1);
+	// 직원번호에 해당하고 삭제여부가 'Y'인 주소록의 총 갯수
+	int totalRows = addressBookDao.totalRows(empNo);
+	
+	// 페이징 10개목록 5개페이지
+	Pagination pagination = new Pagination(currentPage, totalRows);
+	
+	Map<String, Object> param = new HashMap<>();
+	if (!opt.isEmpty()){
+		param.put("opt", opt);
+	}
+	if (!keyword.isEmpty()){
+		param.put("keyword", keyword);
+	} 
+	param.put("empNo", empNo);
+	param.put("begin", pagination.getBegin());
+	param.put("end", pagination.getEnd());
+  // 221213 충돌로인한 주석*/
+
 	int empNo = 1000;
 
 	AddressGroupDao addGroupDao = new AddressGroupDao();
 	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(empNo);
+
 	
 %>
 	<div class="row">
@@ -103,7 +142,7 @@
 		%>
 									</ul>
 								</li>
-				  				<li><span><i class="bi bi-trash me-2"></i>휴지통</span></li>
+				  				<li id="wastebasket" data-employee-no="<%=empNo %>"><span><i class="bi bi-trash me-2"></i>휴지통</span></li>
 				  				<li><span><i class="bi bi-question-square-fill me-2"></i>이름없는 연락처</span></li>
 							</ul>
 						</div>
@@ -114,12 +153,15 @@
 		<div class="col-10">
 			<div class="row mb-2">
 				<div class="col d-flex justify-content-between me-2">
-					<form class="row row-cols-lg-auto align-items-center me-3">
+					<form id="deliverForm" class="row row-cols-lg-auto align-items-center me-3">
+						<input type="hidden" name="opt" value="<%=opt %>">
+						<input type="hidden" name="page" value="<%=currentPage %>">
+					
 						<div class="col-12">
 							<input type="text" class="form-control form-control-sm" name="keyword" placeholder="연락처 검색"/>
 						</div>
 						<div class="col-12">
-							<button type="submit" class="btn btn-sm btn-outline-secondary">검색</button>
+							<button type="button" onclick="submitForm(1);" class="btn btn-sm btn-outline-secondary">검색</button>
 						</div>
 						<small>
 							<strong>내 주소록</strong> | <strong class="text-success"><%=totalRows %></strong>
@@ -129,10 +171,9 @@
 			</div>
 			<hr/>
 			<div class="row mb-2">
-
 			<form id="form-book" method="get" action="move.jsp">
 				<div class="col-12 mn-3">
-					<a href="" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> 삭제</a>
+					<a href="javascript:void(0);" id="deleteBtn" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> 삭제</a>
 					<select class="form-select form-select-sm d-inline" name="groupNo" style="width: 200px;" id="select-groups">
 						<option value=""> 이동할 그룹 선택</option>
 		<%
@@ -145,6 +186,7 @@
 			}
 		%>
 
+
 					</select>
 					<button class="btn btn-outline-secondary btn-xs d-inline" id="btn-move-addr">이동</button>
 				</div>
@@ -152,7 +194,6 @@
 			<div class="row mb-2">
 				<div class="col" id="book-table">
 					<table class="table table-sm border-top">
-
 						<colgroup>
 							<col width="5%">
 							<col width="5%">
@@ -215,7 +256,7 @@
 	if(totalRows >= 1){ 
 %>
 
-					<nav>
+					<nav id="nav">
 						<ul class="pagination pagination-sm justify-content-center">
 							<li class="page-item">
 								<a class="page-link <%=pagination.isFirst() ? "disabled" : "" %>"
@@ -629,6 +670,116 @@ $(function() {
 	});
 });
 
+// 삭제버튼 클릭시 발생하는 이벤트
+	$("#deleteBtn").click(function() {
+		var addressBookNo = [];
+		
+		// 선택한 주소록을 각각 배열에 담는다. 
+		$("input[name=addressBookNo]:checked").each(function(){
+			 addressBookNo.push($(this).val());
+		});
+		
+		// 삭제할 주소록을 deleteAddress.jsp에 보낸다.
+		location.href = "deleteAddress.jsp?addressBookNo="+addressBookNo;
+	});
+	
+	// 페이지 번호 클릭했을때 발생하는 이벤트
+	function changePage(event,page) {
+		event.preventDefault();
+		
+		submitForm(page);
+	}
+	
+	// form 태그 전송
+	function submitForm(page) {
+		$("input[name=page]").val(page);
+		
+		$("#deliverForm").submit();
+	};
+
+	// 휴지통 클릭했을 때 이벤트
+	$("#wastebasket").click(function(){
+		var employeeNo = $(this).attr("data-employee-no");
+		
+		wastbasketList();
+	});
+
+	
+	// ajax사용해서 삭제한 주소록 목록 조회하는 함수
+	function wastbasketList() {
+		
+		$.getJSON("wastebasket.jsp", {empNo:<%=empNo %>}, function(address){
+			// 주소록 갯수를 조회해서 내 주소록의 갯수를 변경한다.
+			var count = address.length;
+			$("#addressCount").text(count);
+			
+			var html = "";
+			var nav = "";
+
+			// 삭제한 주소록이 없을때
+			if (address.length < 1) {
+				html += '<tr>';
+				html += '<td colspan="8" class="text-center">휴지통이 비어있습니다.</td>'
+				html += '</tr>';
+				
+				$("#book-table tbody").html(html);
+				
+				nav += "<ul style='display:none;'></ul>";
+				$("#nav").html(nav);
+				
+				return;
+			}
+			
+			// 삭제한 주소록 목록
+			for (var i = 0; i < address.length; i++) {
+				var addr = address[i];
+				
+				html += '<tr>';
+				html += 	'<td class="text-center"><input type="checkbox" name="" value=""/></td>'
+				html += 	'<td><i class="bi bi-star-fill text-success text-border"></i></td>'
+				html += 	'<td>'+ addr.lastName+addr.firstName +'</td>'
+				html += 	'<td>'+ addr.tel +'</td>'
+				html += 	'<td>'+ addr.email +'</td>'
+				html += 	'<td>'+ addr.company +'</td>'
+				html += 	'<td>'+ addr.dept +'</td>'
+				html += 	'<td>'+ addr.position +'</td>'
+				html += '</tr>';
+				
+				$("#book-table tbody").html(html);
+			}
+			
+			// 페이징 처리
+			var nav = `
+			<%
+			
+			if (totalRows >= 1) {
+				
+			%>
+					<ul class="pagination pagination-sm justify-content-center">	
+						<li class="page-item">
+							<a class="page-link <%=pagination.isFirst()? "disabled" : "" %>" href="wastebasketList.jsp?page=<%=pagination.getPrevPage() %>">이전</a>
+						</li>
+				<%
+					for (int number = pagination.getBeginPage(); number <= pagination.getEndPage(); number++) {
+				%>
+						<li class="page-item">
+							<a class="page-link <%=currentPage == number? "active" : "" %>" href="wastebasketList.jsp?page=<%=number %>" onclick="changePage(event, <%=number %>);"><%=number %></a>
+						</li>
+				<%
+					}
+				%>	
+						<li class="page-item">
+							<a class="page-link <%=pagination.isLast()? "disabled" : "" %>" href="wastebasketList.jsp?page=<%=pagination.getNextPage() %>">다음</a>
+						</li>
+					</ul>
+			<%
+				} 
+			%>			
+			`;
+			
+			$("#nav").html(nav);
+		});
+	}
 </script>
 </body>
 </html>
