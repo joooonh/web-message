@@ -23,6 +23,7 @@
 	<jsp:param name="menu" value="home"/>
 </jsp:include>
 <%
+
 	int userEmpNo = 1000;	// logincheck.jsp로부터 가져와야 하는 값, 1000은 임의의 값임.
 	String group = StringUtils.nullToBlank(request.getParameter("group"));
 	String keyword = StringUtils.nullToBlank(request.getParameter("keyword"));
