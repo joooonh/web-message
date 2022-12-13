@@ -19,5 +19,6 @@
 
 	<!-- SQL 매퍼 파일을 등록 가능한 알파벳 순으로 -->
 	<sqlMap resource="META-INF/ibatis/mappers/employees.xml" />	
+	<sqlMap resource="META-INF/ibatis/mappers/messages.xml" />	
 
 </sqlMapConfig>
