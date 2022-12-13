@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="address">
+
+	<!-- 직원번호에 해당하는 주소록 정보 -->
+	<select id="getAddressByEmpNo" parameterClass="int" resultClass="com.semi.address.dto.AddressDto">
+		select
+			a.address_type			as addressType,
+			a.address_default_yn	as addressDefault,
+			a.address_zipcode		as zipcode,
+			a.address_basic			as addressBasic,
+			a.address_detail		as addressDetail,
+			b.addr_book_no			as bookNo,
+			b.addr_first_name		as firstName,
+			b.addr_last_name		as lastName,
+			b.addr_photo			as photo,
+			b.group_no				as groupNo,
+			b.addr_company			as company,
+			b.addr_dept				as dept,
+			b.addr_position			as position,
+			b.addr_memo				as memo,
+			b.addr_important		as important,
+			b.addr_deleted			as deleted,
+			b.addr_created_date		as createdDate,
+			b.addr_updated_date		as updatedDate,
+			b.addr_deleted_date		as deletedDate,
+			b.emp_no				as empNo,
+			c.contact_type			as contactType,
+            c.contact_tel			as tel,
+            c.contact_default_yn	as contactDefult,
+            e.email_addr	 		as email,
+            e.email_default_yn		as emailDefault
+		from
+			semi_address a, semi_address_books b, semi_address_contacts c, semi_address_emails e		
+ 	    where
+ 			b.emp_no = #value#
+ 			and a.addr_book_no = b.addr_book_no
+ 			and b.addr_book_no = c.addr_book_no
+ 			and b.addr_book_no = e.addr_book_no
+ 			and b.addr_deleted = 'N'
+		order by
+			b.addr_book_no desc
+	</select>
+	
+	<!-- 주소록번호에 해당하는 주소록 정보 -->
+	<select id="getAddressByBookNo" parameterClass="int" resultClass="com.semi.address.dto.AddressDto">
+		select
+			a.address_type			as addressType,
+			a.address_default_yn	as addressDefault,
+			a.address_zipcode		as zipcode,
+			a.address_basic			as addressBasic,
+			a.address_detail		as addressDetail,
+			b.addr_book_no			as bookNo,
+			b.addr_first_name		as firstName,
+			b.addr_last_name		as lastName,
+			b.addr_photo			as photo,
+			b.group_no				as groupNo,
+			b.addr_company			as company,
+			b.addr_dept				as dept,
+			b.addr_position			as position,
+			b.addr_memo				as memo,
+			b.addr_important		as important,
+			b.addr_deleted			as deleted,
+			b.addr_created_date		as createdDate,
+			b.addr_updated_date		as updatedDate,
+			b.addr_deleted_date		as deletedDate,
+			b.emp_no				as empNo,
+			c.contact_type			as contactType,
+            c.contact_tel			as tel,
+            c.contact_default_yn	as contactDefult,
+            e.email_addr	 		as email,
+            e.email_default_yn		as emailDefault
+		from
+			semi_address a, semi_address_books b, semi_address_contacts c, semi_address_emails e		
+ 	    where
+ 			b.addr_book_no = #value#
+ 			and a.addr_book_no = b.addr_book_no
+ 			and b.addr_book_no = c.addr_book_no
+ 			and b.addr_book_no = e.addr_book_no
+ 			and b.addr_deleted = 'N'
+		order by
+			b.addr_book_no desc
+	</select>
+	
+	<!-- 직원번호에 해당하는 주소록중 삭제여부가 Y인 주소록 정보 -->
+	<select id="getAddressByEmpNoFindY" parameterClass="int" resultClass="com.semi.address.dto.AddressDto">
+		select
+			a.address_type			as addressType,
+			a.address_default_yn	as addressDefault,
+			a.address_zipcode		as zipcode,
+			a.address_basic			as addressBasic,
+			a.address_detail		as addressDetail,
+			b.addr_book_no			as bookNo,
+			b.addr_first_name		as firstName,
+			b.addr_last_name		as lastName,
+			b.addr_photo			as photo,
+			b.group_no				as groupNo,
+			b.addr_company			as company,
+			b.addr_dept				as dept,
+			b.addr_position			as position,
+			b.addr_memo				as memo,
+			b.addr_important		as important,
+			b.addr_deleted			as deleted,
+			b.addr_created_date		as createdDate,
+			b.addr_updated_date		as updatedDate,
+			b.addr_deleted_date		as deletedDate,
+			b.emp_no				as empNo,
+			c.contact_type			as contactType,
+            c.contact_tel			as tel,
+            c.contact_default_yn	as contactDefult,
+            e.email_addr	 		as email,
+            e.email_default_yn		as emailDefault
+		from
+			semi_address a, semi_address_books b, semi_address_contacts c, semi_address_emails e		
+ 	    where
+ 			b.emp_no = #value#
+ 			and b.addr_deleted = 'Y'
+ 			and a.addr_book_no = b.addr_book_no
+ 			and b.addr_book_no = c.addr_book_no
+ 			and b.addr_book_no = e.addr_book_no
+		order by
+			b.addr_book_no desc
+ 			
+	</select>
+
+	<!-- 주소록 기본 정보 업데이트 -->
+	<update id="updateAddressBook" parameterClass="com.semi.address.dto.AddressDto">
+		update
+			semi_address_books
+		set
+			addr_first_name = #firstName#,
+			addr_last_name = #lastName#,
+			addr_photo = #photo#,
+			group_no = #groupNo#,
+			addr_company = #company#,
+			addr_dept = #dept#,
+			addr_position = #position#,
+			addr_memo = #memo#,
+			addr_important = #important#,
+			addr_deleted = #deleted#,
+			addr_updated_date = sysdate,
+			addr_deleted_date = sysdate
+		where
+			addr_book_no = #bookNo#
+	</update>
+	
+	<!-- 주소록 주소 정보 업데이트 -->
+	<update id="updateAddress" parameterClass="com.semi.address.dto.AddressDto">
+		update
+			semi_address
+		set
+			address_type = #addressType#,
+			address_default_yn = #addressDefault#,
+			address_zipcode = #zipcode#,
+			address_basic = #addressBasic#,
+			address_detail = #addressDetail#
+		where
+			addr_book_no = #bookNo#
+	</update>
+	
+	<!-- 주소록 연락처 정보 업데이트 -->
+	<update id="updateAddressContact" parameterClass="com.semi.address.dto.AddressDto">
+		update
+			semi_address_contacts
+		set
+			contact_type = #contactType#,
+			contact_tel = #tel#,
+			contact_default_yn = #contactDefult#
+		where
+			addr_book_no = #bookNo#
+	</update>
+	
+	<!-- 주소록 이메일 정보 업데이트 -->
+	<update id="updateAddressEmail" parameterClass="com.semi.address.dto.AddressDto">
+		update
+			semi_address_emails
+		set
+			email_addr = #email#,
+			email_default_yn = #emailDefault#
+		where
+			addr_book_no = #bookNo#
+	</update>
+	
+	<!-- 주소록 삭제 -->
+	<delete id="deleteAddress" parameterClass="int">
+		delete from
+			semi_address_books
+		where
+			addr_book_no = #value#
+	</delete>
+</sqlMap>
+

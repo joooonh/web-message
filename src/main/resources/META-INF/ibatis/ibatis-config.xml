@@ -18,10 +18,13 @@
 	</transactionManager>
 
 	<!-- SQL 매퍼 파일을 등록 가능한 알파벳 순으로 -->
+
 	<sqlMap resource="META-INF/ibatis/mappers/addresses.xml" />	
 	<sqlMap resource="META-INF/ibatis/mappers/books.xml" />	
 	<sqlMap resource="META-INF/ibatis/mappers/contacts.xml" />	
 	<sqlMap resource="META-INF/ibatis/mappers/emails.xml" />	
+	<sqlMap resource="META-INF/ibatis/mappers/addressBooks.xml" />	
 	<sqlMap resource="META-INF/ibatis/mappers/employees.xml" />	
+	<sqlMap resource="META-INF/ibatis/mappers/addressGroups.xml" />	
 
 </sqlMapConfig>

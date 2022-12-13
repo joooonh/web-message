@@ -1,3 +1,4 @@
+
 <%@page import="com.semi.address.vo.Contact"%>
 <%@page import="com.semi.address.vo.Email"%>
 <%@page import="com.semi.address.dao.EmailDao"%>
@@ -9,6 +10,9 @@
 <%@page import="com.semi.util.Pagination"%>
 <%@page import="com.semi.address.dao.BookDao"%>
 <%@page import="com.semi.util.StringUtils"%>
+<%@page import="com.semi.address.vo.Group"%>
+<%@page import="java.util.List"%>
+<%@page import="com.semi.address.dao.AddressGroupDao"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -50,6 +54,13 @@
 	List<Book> bookList = bookDao.getBooks(param); 
 %>
 <div class="container-fluid my-3">
+<%
+	int empNo = 1000;
+
+	AddressGroupDao addGroupDao = new AddressGroupDao();
+	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(empNo);
+	
+%>
 	<div class="row">
 		<div class="col-2">
 			<div class="row mb-3">
@@ -74,13 +85,22 @@
 				<div class="col">
 					<div class="card">
 						<div class="card-body">
-							<ul class="tree">
+							<ul class="tree" style="cursor:pointer;">
 				  				<li>
-				  					<span><i class="bi bi-person-lines-fill me-2"></i><mark>전체 연락처</mark></span>
+				  					<span>
+				  						<i class="bi bi-person-lines-fill me-2"></i><mark>전체 연락처</mark>
+				  						<a href="control.jsp" class="text-decoration-none text-dark float-end"><i class="bi bi-gear-fill"></i></a>
+				  					</span>
 				    				<ul class="nested active">
-										<li>친구</li>
-										<li>가족</li>
-										<li>회사</li>
+		<%
+			if (!addGroupList.isEmpty()) {
+				for (Group group : addGroupList) {
+		%>
+										<li><a href="detailGroup.jsp?groupNo=<%=group.getNo() %>" style="text-decoration:none;color:black;"><%=group.getName() %></a></li>
+		<%
+				}
+			}
+		%>
 									</ul>
 								</li>
 				  				<li><span><i class="bi bi-trash me-2"></i>휴지통</span></li>
@@ -109,20 +129,30 @@
 			</div>
 			<hr/>
 			<div class="row mb-2">
-				<div class="col">
-					<a href="" class="btn btn-outline-danger btn-sm disabled" id="deleteBook"><i class="bi bi-trash"></i> 삭제</a>
-					<select class="form-select form-select-sm d-inline" style="width: 100px;">
-						<option value=""> 이동</option>
-						<option value="1"> 친구</option>
-						<option value="2"> 가족</option>
-						<option value="3"> 회사</option>
-						<option value="4"> 휴지통</option>
+
+			<form id="form-book" method="get" action="move.jsp">
+				<div class="col-12 mn-3">
+					<a href="" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> 삭제</a>
+					<select class="form-select form-select-sm d-inline" name="groupNo" style="width: 200px;" id="select-groups">
+						<option value=""> 이동할 그룹 선택</option>
+		<%
+			if (!addGroupList.isEmpty()) {
+				for (Group group : addGroupList) {
+		%>
+						<option value="<%=group.getNo() %>"> <%=group.getName() %></option>
+		<%
+				}
+			}
+		%>
+
 					</select>
+					<button class="btn btn-outline-secondary btn-xs d-inline" id="btn-move-addr">이동</button>
 				</div>
 			</div>
 			<div class="row mb-2">
 				<div class="col" id="book-table">
 					<table class="table table-sm border-top">
+
 						<colgroup>
 							<col width="5%">
 							<col width="5%">
@@ -164,6 +194,7 @@
 			Email email = emailDao.getEmailsByBookNo(bookNo); 
 %>
 							<tr>
+
 								<td><input type="checkbox" name="bookNo" value="<%=bookNo %>"/></td>
 								<td><i class="bi bi-star text-success" ></i></td>
 								<td><%=book.getFirstName()%><%=book.getLastName() %></td>
@@ -172,6 +203,7 @@
 								<td><%=StringUtils.nullToBlank(book.getCompany()) %></td>
 								<td><%=StringUtils.nullToBlank(book.getDept()) %></td>
 								<td><%=StringUtils.nullToBlank(book.getPosition()) %></td>
+
 							</tr>
 <%
 		}
@@ -212,12 +244,14 @@
 	}
 %>
 				</div>
+				</form>
 			</div>
 		</div>
 	</div>
 </div>
 <div class="modal" tabindex="-1" id="modal-form-address-group">
 	<div class="modal-dialog modal-sm">
+		<form method="post" action="registerGroupH.jsp">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title">연락처 그룹 추가</h5>
@@ -225,15 +259,14 @@
 			</div>
 			<div class="modal-body">
 				<p>그룹명을 입력하세요.</p>
-				<form>
-					<input type="text" class="form-control"/>
-				</form>
+					<input type="text" class="form-control" name="name"/>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
-				<button type="button" class="btn btn-primary btn-sm" >등록</button>
+				<button type="submit" class="btn btn-primary btn-sm">등록</button>
 			</div>
 		</div>
+		</form>
 	</div>
 </div>
 <!--  
@@ -577,6 +610,25 @@ $(function(){
 	})
 	
 })
+<script type="text/javascript">
+$(function() {
+	$("#btn-move-addr").click(function () {
+		var groupNo = $("#select-groups").val()
+		if (groupNo == "") {
+			alert("이동할 그룹을 선택하세요.")
+			return false;
+		}
+		
+		var checkedCheckboxLength = $("#table-address-books :checkbox[name=bookNo]:checked").length
+		if (checkedCheckboxLength == 0) {
+			alert("이동할 주소록을 하나 이상 선택하세요.")
+			return false;
+		}
+		
+		$("#form-book").trigger("submit");
+	});
+});
+
 </script>
 </body>
 </html>

@@ -3,21 +3,17 @@ package com.semi.address.vo;
 import java.util.Date;
 
 public class Group {
-	private int no; 
-	private String name; 
-	private int addressCount; 
-	private int seq; 
-	private String deleted; 
-	private Date createdDate; 
-	private Date updatedDate; 
-	private Date deletedDate; 
-	private int employeeNo;
-	
-	public Group() {}
-	
-	public Group(int no) {
-		this.no = no;
-	}
+
+	private int no;				// 그룹번호
+	private String name;		// 그룹이름
+	private int addressCount;	// 주소록갯수
+	private int seq;			// 그룹 출력순서
+	private String deleted;		// 그룹 삭제여부
+	private Date createdDate;	// 등록일
+	private Date updatedDate;	// 수정일
+	private Date deletedDate;	// 삭제일
+	private int empNo;			// 직원번호
+
 	public int getNo() {
 		return no;
 	}
@@ -66,10 +62,19 @@ public class Group {
 	public void setDeletedDate(Date deletedDate) {
 		this.deletedDate = deletedDate;
 	}
-	public int getEmployeeNo() {
-		return employeeNo;
+
+	public int getEmpNo() {
+		return empNo;
 	}
-	public void setEmployeeNo(int employeeNo) {
-		this.employeeNo = employeeNo;
+	public void setEmpNo(int empNo) {
+		this.empNo = empNo;
 	}
+	
+	@Override
+	public String toString() {
+		return "Group [no=" + no + ", name=" + name + ", addressCount=" + addressCount + ", seq=" + seq + ", deleted="
+				+ deleted + ", createdDate=" + createdDate + ", updatedDate=" + updatedDate + ", deletedDate="
+				+ deletedDate + ", empNo=" + empNo + "]";
+	}
+	
 }
