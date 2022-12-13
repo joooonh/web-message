@@ -1,3 +1,4 @@
+<%@page import="com.semi.util.StringUtils"%>
 <%@page import="com.semi.address.vo.Group"%>
 <%@page import="java.util.List"%>
 <%@page import="com.semi.address.dao.AddressGroupDao"%>
@@ -12,6 +13,13 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
 <link href="/web-message/resources/css/style.css" rel="stylesheet">
 <title>사내 메세지 애플리케이션</title>
+<style type="text/css">
+.btn-xs {
+	--bs-btn-padding-y: .20rem; 
+	--bs-btn-padding-x: .5rem; 
+	--bs-btn-font-size: .55rem;
+}
+</style>
 </head>
 <body>
 <jsp:include page="../common/header.jsp">
@@ -21,7 +29,9 @@
 <%
 	int empNo = 1000;
 
+	
 	AddressGroupDao addGroupDao = new AddressGroupDao();
+	// 직원번호로 조회한 그룹정보
 	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(empNo);
 	
 %>
@@ -52,7 +62,7 @@
 							<ul class="tree" style="cursor:pointer;">
 				  				<li>
 				  					<span>
-				  						<i class="bi bi-person-lines-fill me-2"></i><mark>전체 연락처</mark>
+				  						<a href="home.jsp" class="text-decoration-none text-dark"><i class="bi bi-person-lines-fill me-2"></i><mark>전체 연락처</mark></a>
 				  						<a href="control.jsp" class="text-decoration-none text-dark float-end"><i class="bi bi-gear-fill"></i></a>
 				  					</span>
 				    				<ul class="nested active">
@@ -76,114 +86,109 @@
 			</div>
 		</div>
 		<div class="col-10">
+			<div class="row">
+				<strong>환경설정</strong>
+			</div>
+			<hr />
 			<div class="row mb-2">
-				<div class="col d-flex justify-content-between me-2">
-					<form class="row row-cols-lg-auto align-items-center me-3">
-						<div class="col-12">
-							<input type="text" class="form-control form-control-sm" name="keyword" placeholder="연락처 검색"/>
+				<div class="col">
+					<form method="post" action="registerGroupC.jsp">
+						<div class="row mb-1">
+							<label class="col-sm-1 col-form-label col-form-label-sm fw-bold">그룹 추가</label>
+							<div class="col-sm-4">
+								<input type="text" class="form-control form-control-sm" placeholder="연락처그룹을 추가하세요" name="name">
+							</div>
+							<div class="col-sm-1">
+								<button type="submit" class="btn btn-success btn-xs" style="margin-top: 2px;">추가</button>
+							</div>
 						</div>
-						<div class="col-12">
-							<button type="submit" class="btn btn-sm btn-outline-secondary">검색</button>
-						</div>
-						<small>
-							<strong>내 주소록</strong> | <strong class="text-success">1</strong>
-						</small>
 					</form>
 				</div>
 			</div>
 			<hr/>
 			<div class="row mb-2">
-			<form id="form-book" method="get" action="move.jsp">
-				<div class="col-12 mn-3">
-					<a href="" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> 삭제</a>
-					<select class="form-select form-select-sm d-inline" name="groupNo" style="width: 200px;" id="select-groups">
-						<option value=""> 이동할 그룹 선택</option>
-		<%
-			if (!addGroupList.isEmpty()) {
-				for (Group group : addGroupList) {
-		%>
-						<option value="<%=group.getNo() %>"> <%=group.getName() %></option>
-		<%
-				}
-			}
-		%>
-					</select>
-					<button class="btn btn-outline-secondary btn-xs d-inline" id="btn-move-addr">이동</button>
-				</div>
-				
-				<div class="col-12">
-					<table class="table table-sm border-top" id="table-address-books">
-						<colgroup>
-							<col width="5%">
-							<col width="5%">
-							<col width="15%">
-							<col width="15%">
-							<col width="15%">
-							<col width="15%">
-							<col width="15%">
-							<col width="15%">
-						</colgroup>
-						<thead>
-							<tr class="table-light">
-								<th class="text-center"><input type="checkbox" /></th>
-								<th><i class="bi bi-star-fill text-success"></i></th>
-								<th>이름</th>
-								<th>전화번호</th>
-								<th>이메일</th>
-								<th>소속회사</th>
-								<th>부서명</th>
-								<th>직책</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td colspan="8" class="text-center">연락처가 없습니다.</td>
-							</tr>
-							<tr>
-								<td><input type="checkbox" name="bookNo" value="100"/></td>
-								<td><i class="bi bi-star-fill text-success"></i></td>
-								<td>홍길동</td>
-								<td>010-1234-5678</td>
-								<td>hong@gmail.com</td>
-								<td>샘플 주식회사</td>
-								<td>영업팀</td>
-								<td>과장</td>
-							</tr>
-							<tr>
-								<td><input type="checkbox" name="bookNo" value="101"/></td>
-								<td><i class="bi bi-star text-secondary"></i></td>
-								<td>홍길동</td>
-								<td>010-1234-5678</td>
-								<td>hong@gmail.com</td>
-								<td>샘플 주식회사</td>
-								<td>영업팀</td>
-								<td>과장</td>
-							</tr>
-						</tbody>
-					</table>
+				<div class="col">
+					<button class="btn btn-outline-secondary btn-xs rounded-0" onclick="checkAll">전체 선택</button>
+					<button class="btn btn-outline-secondary btn-xs rounded-0"><i class="bi bi-trash"></i> 삭제</button>
 					
-					<nav>
-						<ul class="pagination pagination-sm justify-content-center">
-							<li class="page-item disabled">
-								<a class="page-link">이전</a>
-							</li>
-							<li class="page-item"><a class="page-link active" href="#">1</a></li>
-							<li class="page-item"><a class="page-link" href="#">2</a></li>
- 							<li class="page-item"><a class="page-link" href="#">3</a></li>
-							<li class="page-item">
-								<a class="page-link" href="#">다음</a>
-							</li>
-						</ul>
-					</nav>
+					<div class="btn-group" role="group" aria-label="Basic example">
+						<button class="btn btn-outline-secondary btn-xs rounded-0">맨 위로</button>
+						<button class="btn btn-outline-secondary btn-xs rounded-0">위로</button>
+						<button class="btn btn-outline-secondary btn-xs rounded-0">아래로</button>
+						<button class="btn btn-outline-secondary btn-xs rounded-0">맨 아래로</button>
+					</div>
 				</div>
-				</form>
+			</div>
+			<div class="row mb-2">
+				<table class="table table-sm border-top">
+					<colgroup>
+						<col width="5%">
+						<col width="20%">
+						<col width="*">
+						<col width="10%">
+					</colgroup>
+					<thead>
+						<tr class="bg-light small">
+							<th><input type="checkbox" id="checkbox-all"/></th>
+							<th>그룹명</th>
+							<th>그룹설명</th>
+							<th>수정/삭제</th>
+						</tr>
+					</thead>
+					<tbody>
+			<%
+				if (addGroupList.isEmpty()) {
+			%>
+						<tr class="small">
+				<td></td>
+						</tr>
+			<%
+				} else {
+					for (Group group : addGroupList) {
+			%>
+						<tr class="small">
+							<td><input type="checkbox" name="groupNo" value="100"></td>
+							<td><%=group.getName()%></td>
+							<td></td>
+							<td>
+								<button class="btn btn-outline-danger btn-xs rounded-0" data-group-no="100">삭제</button>
+								<button class="btn btn-outline-warning btn-xs rounded-0" data-group-no="100">수정</button>
+							</td>
+						</tr>
+			<%
+					}
+				}	
+			%>
+					</tbody>
+				</table>
 			</div>
 		</div>
 	</div>
 </div>
+<div class="modal" tabindex="-1" id="modal-modifyform-address-group">
+	<div class="modal-dialog modal-sm">
+	<form method="post" action="modify.jsp">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">연락처 그룹  수정</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<p>그룹명을 입력하세요.</p>
+					<input type="hidden" name="groupNo" value="100" />
+					<input type="text" class="form-control" name="groupName" value="친구"/>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
+				<button type="submit" class="btn btn-primary btn-sm" >수정</button>
+			</div>
+		</div>
+	</form>
+	</div>
+</div>
 <div class="modal" tabindex="-1" id="modal-form-address-group">
 	<div class="modal-dialog modal-sm">
-		<form method="post" action="registerGroupH.jsp">
+		<form method="post" action="registerGroupC.jsp">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title">연락처 그룹 추가</h5>
@@ -195,7 +200,7 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
-				<button type="submit" class="btn btn-primary btn-sm">등록</button>
+				<button type="submit" class="btn btn-primary btn-sm" >등록</button>
 			</div>
 		</div>
 		</form>
@@ -309,21 +314,30 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 <script type="text/javascript">
 $(function() {
-	$("#btn-move-addr").click(function () {
-		var groupNo = $("#select-groups").val()
-		if (groupNo == "") {
-			alert("이동할 그룹을 선택하세요.")
-			return false;
-		}
+	// 그룹명 선택/해제
+	$("#checkbox-all").change(function() {
+		var checkboxAllChecked = $(this).prop("checked");
+		$(":checkbox[name=groupNo]").prop('checked', checkboxAllChecked);
 		
-		var checkedCheckboxLength = $("#table-address-books :checkbox[name=bookNo]:checked").length
-		if (checkedCheckboxLength == 0) {
-			alert("이동할 주소록을 하나 이상 선택하세요.")
-			return false;
-		}
-		
-		$("#form-book").trigger("submit");
+		toggleSelectedButton();
 	});
+	
+	$(":checkbox[name=groupNo]").change(function() {
+		toggleCheckboxAll();
+		toggleSelectedButton();
+	});
+	
+	function toggleCheckboxAll() {
+		
+		var checkboxLength = $(":checkbox[name=groupNo]").length;
+		
+		var checkedCheckboxLength = $(":checkbox[name=groupNo]:checked").length;
+		
+		$("#checkbox-all").prop("checked", checkboxLength == checkedCheckboxLength);
+	}
+	
+	//전체선택
+	
 });
 </script>
 </body>

@@ -1,3 +1,4 @@
+<%@page import="com.semi.util.StringUtils"%>
 <%@page import="com.semi.address.vo.Group"%>
 <%@page import="java.util.List"%>
 <%@page import="com.semi.address.dao.AddressGroupDao"%>
@@ -21,7 +22,11 @@
 <%
 	int empNo = 1000;
 
+	int groupNo = StringUtils.stringToInt(request.getParameter("groupNo"));
+	// System.out.println("그룹번호: " + groupNo);
+
 	AddressGroupDao addGroupDao = new AddressGroupDao();
+	// 사원번호로 주소록그룹 리스트 조회
 	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(empNo);
 	
 %>
@@ -49,10 +54,10 @@
 				<div class="col">
 					<div class="card">
 						<div class="card-body">
-							<ul class="tree" style="cursor:pointer;">
+							<ul class="tree">
 				  				<li>
 				  					<span>
-				  						<i class="bi bi-person-lines-fill me-2"></i><mark>전체 연락처</mark>
+				  						<a href="home.jsp" class="text-decoration-none text-dark"><i class="bi bi-person-lines-fill me-2"></i>전체 연락처</a>
 				  						<a href="control.jsp" class="text-decoration-none text-dark float-end"><i class="bi bi-gear-fill"></i></a>
 				  					</span>
 				    				<ul class="nested active">
@@ -60,7 +65,22 @@
 			if (!addGroupList.isEmpty()) {
 				for (Group group : addGroupList) {
 		%>
-										<li><a href="detailGroup.jsp?groupNo=<%=group.getNo() %>" style="text-decoration:none;color:black;"><%=group.getName() %></a></li>
+										<li>
+											<a href="detailGroup.jsp?groupNo=<%=group.getNo() %>" style="text-decoration:none;color:black;">
+		<%
+					if (group.getNo() == groupNo) {
+		%>
+												<mark><%=group.getName() %></mark>
+		<%
+					} else {
+		%>		
+												<%=group.getName() %>
+		<%
+					}
+		%>
+											
+											</a>
+										</li>
 		<%
 				}
 			}
@@ -110,7 +130,7 @@
 					</select>
 					<button class="btn btn-outline-secondary btn-xs d-inline" id="btn-move-addr">이동</button>
 				</div>
-				
+			
 				<div class="col-12">
 					<table class="table table-sm border-top" id="table-address-books">
 						<colgroup>
@@ -176,7 +196,7 @@
 						</ul>
 					</nav>
 				</div>
-				</form>
+			</form>
 			</div>
 		</div>
 	</div>
@@ -309,6 +329,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 <script type="text/javascript">
 $(function() {
+	// 주소록 그룹 이동
 	$("#btn-move-addr").click(function () {
 		var groupNo = $("#select-groups").val()
 		if (groupNo == "") {
@@ -317,13 +338,14 @@ $(function() {
 		}
 		
 		var checkedCheckboxLength = $("#table-address-books :checkbox[name=bookNo]:checked").length
-		if (checkedCheckboxLength == 0) {
+		if(checkedCheckboxLength == 0) {
 			alert("이동할 주소록을 하나 이상 선택하세요.")
 			return false;
 		}
 		
 		$("#form-book").trigger("submit");
-	});
+	})
+	
 });
 </script>
 </body>
