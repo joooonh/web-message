@@ -7,7 +7,6 @@
 	<select id="getEmployeeByNo" parameterClass="int" resultClass="com.semi.admin.vo.Employee">
 		select 
 			emp_no as no,
-			emp_id as id,
 			emp_password as password,
 			emp_photo as photo,
 			emp_name as name,
@@ -22,7 +21,7 @@
 		from
 			semi_employees
 		where
-			employee_no = #value#
+			emp_no = #value#
 	</select>
 	
 	<select id="getTotalRows" resultClass="int">
@@ -35,7 +34,6 @@
 	<select id="getEmployees" parameterClass="com.semi.util.Pagination" resultClass="com.semi.admin.vo.Employee">
 		select 
 			emp_no as no,
-			emp_id as id,
 			emp_password as password,
 			emp_photo as photo,
 			emp_name as name,
@@ -50,7 +48,6 @@
 		from (select
 				row_number() over (order by emp_no desc) row_numbers,
 				emp_no,
-				emp_id,
 				emp_password,
 				emp_photo,
 				emp_name,
