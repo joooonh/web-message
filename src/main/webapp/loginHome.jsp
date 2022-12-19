@@ -1,3 +1,4 @@
+<%@page import="com.semi.admin.dao.EmployeeDao"%>
 <%@page import="com.semi.admin.vo.Employee"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
@@ -13,9 +14,16 @@
 </head>
 <body>
 <jsp:include page="common/header.jsp">
-	<jsp:param name="menu" value="home"/>
+	<jsp:param name="menu" value="loginHome"/>
 </jsp:include>
+<%
+	Employee loginEmployee = (Employee) session.getAttribute("login_employee");
+	if (loginEmployee == null) {
+		response.sendRedirect("home.jsp");
+		return;
+	}
 
+%>
 <div class="container my-3">
 	<div class="row">
 		<div class="col-9">
@@ -33,56 +41,31 @@
 		<div class="col-3">
 		
 			<div class="border p-3 bg-light">
-				<p>로그인 정보</p>
-				
-<%
-	String error = request.getParameter("error");
-%>
-
-<%
-	if ("fail".equals(error)) {
-%>
-	<div class="alert alert-danger" style="font-size: 14px;">
-		<strong>로그인 실패</strong> 사원번호 혹은 비밀번호가 일치하지 않습니다.
-	</div>
-<%
-	}
-%>
-				<form id="form-login" class="" method="post" action="login.jsp">
-					<div class="mb-3">
-						<input type="text" class="form-control form-control-sm" name="no"  placeholder="사원번호"/>
+				<div class="row">
+					<div class="col-4 mb-2">
+						<img src="/web-message/resources/images/default.png" class="img-thumbnail rounded-circle"> 
 					</div>
-					<div class="mb-3">
-						<input type="password" class="form-control form-control-sm" name="password"  placeholder="비밀번호"/>
+					<div class="col-8">
+						<div class="mb-2">
+							<strong><%=loginEmployee.getName() %>님</strong> 환영합니다.
+						</div>
+						<div class="mb-3">
+							<small>쪽지</small> <small class="text-success fw-bold">10</small> | 
+							<small>노트</small> <small class="text-success fw-bold">5</small>
+						</div>
 					</div>
-					<div class="d-grid gap-2">
-						<button type="submit" class="btn btn-success btn-sm">로그인</button>
+					<div class="col-12">
+						<div class="text-end">
+							<a href="common/passwordform.jsp" class="btn btn-outline-secondary btn-sm">비밀번호변경</a>
+							<a href="logout.jsp" class="btn btn-secondary btn-sm">로그아웃</a>
+						</div>
 					</div>
-				</form>
+				</div>
 			</div>
-			
 		</div>
 	</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-<script type="text/javascript">
-$(function() {
-	$("#form-login").submit(function() {
-		let empNo = $(":input[name=no]").val();
-		let empPassword = $(":input[name=password]").val()
-		if (empNo === "") {
-			alert("아이디는 필수입력값입니다.");
-			return false;
-		}
-		if (empPassword === "") {
-			alert("비밀번호는 필수입력값입니다.");
-			return false;
-		}
-		
-		return true;
-	});
-})
-</script>
 </body>
 </html>
