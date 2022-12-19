@@ -5,7 +5,7 @@ public class Email {
 	private String addr;
 	private String defaultYN; 
 	private int bookNo;
-	
+  
 	public String getAddr() {
 		return addr;
 	}

@@ -4,6 +4,8 @@
 <%@page import="com.semi.address.dao.AddressGroupDao"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ include file="../logincheck.jsp" %>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -27,12 +29,10 @@
 </jsp:include>
 <div class="container-fluid my-3">
 <%
-	int empNo = 1000;
-
 	
 	AddressGroupDao addGroupDao = new AddressGroupDao();
 	// 직원번호로 조회한 그룹정보
-	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(empNo);
+	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(loginEmployee.getNo());
 	
 %>
 	<div class="row">
@@ -92,7 +92,7 @@
 			<hr />
 			<div class="row mb-2">
 				<div class="col">
-					<form method="post" action="registerGroupC.jsp">
+					<form id="form-add-addrGroup" method="post" action="registerGroupC.jsp">
 						<div class="row mb-1">
 							<label class="col-sm-1 col-form-label col-form-label-sm fw-bold">그룹 추가</label>
 							<div class="col-sm-4">
@@ -188,7 +188,7 @@
 </div>
 <div class="modal" tabindex="-1" id="modal-form-address-group">
 	<div class="modal-dialog modal-sm">
-		<form method="post" action="registerGroupC.jsp">
+		<form id="form-add-addrGroup" method="post" action="registerGroupC.jsp">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title">연락처 그룹 추가</h5>
@@ -336,7 +336,30 @@ $(function() {
 		$("#checkbox-all").prop("checked", checkboxLength == checkedCheckboxLength);
 	}
 	
-	//전체선택
+	//그룹 등록
+	/*
+	$("#from-register-addrGroup").submit(function() {
+		let name = $(":input[name=name]").val();
+		
+		if (name === "") {
+			alert("그룹명은 필수입력 값입니다.");
+			return false;
+		}
+		
+		return true;
+	})
+	*/
+	
+	$("#form-add-addrGroup").submit(function() {
+		let groupName = $(":input[name=name]").val();
+		
+		if (groupName === "") {
+			alert("그룹명은 필수입력 값입니다.");
+			return false;
+		}
+		
+		return true;
+	})
 	
 });
 </script>

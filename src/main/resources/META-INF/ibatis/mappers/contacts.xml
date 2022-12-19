@@ -32,9 +32,9 @@
 	
 	<insert id="insertContact" parameterClass="com.semi.address.vo.Contact">
 		insert into semi_address_contacts
-			(contact_type, contact_tel, addr_book_no)
+			(contact_type, contact_tel, contact_default_yn, addr_book_no)
 		values
-			(#type#, #tel#, #bookNo#)
+			(#type#, #tel#, #defaultYN#, #bookNo#)
 	</insert>
 	
 	<select id="getContactByAddressBookNo" parameterClass="int" resultClass="com.semi.address.vo.Contact">

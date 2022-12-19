@@ -22,6 +22,7 @@
 	<sqlMap resource="META-INF/ibatis/mappers/addresses.xml" />	
 	<sqlMap resource="META-INF/ibatis/mappers/books.xml" />	
 	<sqlMap resource="META-INF/ibatis/mappers/contacts.xml" />	
+	<sqlMap resource="META-INF/ibatis/mappers/departments.xml" />	
 	<sqlMap resource="META-INF/ibatis/mappers/emails.xml" />	
 	<sqlMap resource="META-INF/ibatis/mappers/addressBooks.xml" />	
 	<sqlMap resource="META-INF/ibatis/mappers/employees.xml" />	
@@ -30,6 +31,7 @@
 	<sqlMap resource="META-INF/ibatis/mappers/folders.xml" />	
 	<sqlMap resource="META-INF/ibatis/mappers/memos.xml" />	
 	<sqlMap resource="META-INF/ibatis/mappers/photos.xml" />	
+	<sqlMap resource="META-INF/ibatis/mappers/positions.xml" />	
 	<sqlMap resource="META-INF/ibatis/mappers/addressGroups.xml" />	
 
 </sqlMapConfig>

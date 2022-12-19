@@ -1,4 +1,3 @@
-<%@page import="com.semi.admin.vo.Employee"%>
 <%@page import="com.semi.address.dto.AddressDto"%>
 <%@page import="com.semi.address.dao.AddressBookDao"%>
 
@@ -18,8 +17,6 @@
 <%@page import="com.semi.address.dao.AddressGroupDao"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ include file="../logincheck.jsp" %>
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -41,8 +38,9 @@
 	<jsp:param name="menu" value="address"/>
 </jsp:include>
 <%
-	
+	int empNo = 1002;
 	// 유저아이디 (로그인한 유저의 주소록)
+	// String loginUserId = (String) session.getAttribute("login_user_id"); 
 	
 	// 현재 페이지 
 	int currentPage = StringUtils.stringToInt(request.getParameter("page"), 1);
@@ -66,7 +64,7 @@
 	if (!keyword.isEmpty()){
 		param.put("keyword", keyword);
 	} 
-	param.put("empNo", loginEmployee.getNo());
+	param.put("empNo", empNo);
 	
 	param.put("begin", pagination.getBegin()); 
 	param.put("end", pagination.getEnd()); 
@@ -74,7 +72,7 @@
 	List<Book> bookList = bookDao.getBooks(param); 
 	
 	AddressGroupDao addGroupDao = new AddressGroupDao();
-	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(loginEmployee.getNo());
+	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(empNo);
 %>
 <div class="container-fluid my-3">
 	<div class="row">
@@ -121,9 +119,7 @@
 		%>
 									</ul>
 								</li>
-
-				  				<li id="wastebasket" data-employee-no="<%=loginEmployee.getNo() %>"><span><i class="bi bi-trash me-2"></i>휴지통</span></li>
-
+				  				<li id="wastebasket" data-employee-no="<%=empNo %>"><span><i class="bi bi-trash me-2"></i>휴지통</span></li>
 				  				<li><span><i class="bi bi-question-square-fill me-2"></i>이름없는 연락처</span></li>
 							</ul>
 						</div>
@@ -155,7 +151,6 @@
 			<form id="form-book" method="get" action="move.jsp">
 				<div class="col-12 mn-3">
 					<a href="javascript:void(0);" id="deleteBtn" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> 삭제</a>
-					<a href="javascript:void(0);" id="compleetDeleteBtn" class="btn btn-outline-danger btn-sm d-none"><i class="bi bi-trash"></i> 완전삭제</a>
 					<select class="form-select form-select-sm d-inline" name="groupNo" style="width: 200px;" id="select-groups">
 						<option value=""> 이동할 그룹 선택</option>
 		<%
@@ -174,9 +169,7 @@
 			</form>
 			</div>
 			<div class="row mb-2">
-
-				<div class="col" id="book-table">
-
+				<div class="col">
 					<table class="table table-sm border-top" id="table-address-list">
 						<colgroup>
 							<col width="5%">
@@ -215,11 +208,10 @@
 			
 			// 기본주소록만 목록에 표시
 			Contact contact = contactDao.getDefaultContactByBookNo(bookNo);
-			// bookNo에 해당하는 이메일 정보 출력
 			Email email = emailDao.getDefaultEmailByBookNo(bookNo); 
 %>
 							<tr>
-              
+
 								<td><input type="checkbox" name="bookNo" value="<%=bookNo %>"/></td>
 								<td><i class="bi <%=book.getImportant().equals("Y") ? "bi-star-fill" : "bi-star" %> text-success" data-important="<%=book.getImportant()%>" data-book-no="<%=bookNo %>"></i></td>
 								<td>
@@ -279,7 +271,7 @@
 </div>
 <div class="modal" tabindex="-1" id="modal-form-address-group">
 	<div class="modal-dialog modal-sm">
-		<form id="from-register-addrGroup" method="post" action="registerGroupH.jsp">
+		<form method="post" action="registerGroupH.jsp">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title">연락처 그룹 추가</h5>
@@ -433,9 +425,7 @@
 	</form>
 	</div>
 </div>
-
 <!-- 연락처 상세보기 모달폼 -->
-
 <div class="modal" tabindex="-1" id="modal-detail-address">
    <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -445,97 +435,19 @@
          </div>
          <div class="modal-body">
             <p>연락처 정보를 확인하세요</p>
-
-            <form id="updateForm" class="border p-3 bg-light">
+            <form class="border p-3 bg-light">
             <input type="hidden" name="detail-bookNo" value="" >
-
                <div class="row mb-3">
                   <label class="col-sm-2 col-form-label">이름</label>
                   <div class="col-sm-3">
                      <input type="text" class="form-control form-control-sm" name="firstName" value="홍">
                   </div>
-
                   <div class="col-sm-6">
-
                      <input type="text" class="form-control form-control-sm" name="lastName" value="길동">
                   </div>
                </div>
                <div id="box-contact" class="mb-3">
                   <!-- 연락처가 추가되는 곳 -->
-
-/*
-221219 충돌로인한 주석처리 나중에 확인후 삭제
-                  <div class="row mb-1">
-                     <label class="col-sm-2 col-form-label">전화번호 <input type="radio" name="" value="Y" checked class="float-end mt-1"></label>
-                     <div class="col-sm-2">
-                        <select class="form-select form-select-sm" name="contactType">
-                           <option value="휴대폰"> 휴대폰</option>
-                           <option value="회사" selected> 회사</option>
-                           <option value="집"> 집</option>
-                           <option value="기타"> 기타</option>
-                        </select>
-                     </div>
-                     <div class="col-sm-6">
-                        <input type="text" class="form-control form-control-sm" name="contactTel" value="020-1234-5678">
-                     </div>
-                     <div class="col-sm-2 d-flex justify-content-end">
-                        <button type="button" class="btn btn-sm"><i class="bi bi-plus-circle"></i></button>
-                        <button type="button" class="btn btn-sm"><i class="bi bi-dash-circle"></i></button>
-                     </div>
-                  </div>
-                  <div class="row mb-1">
-                     <label class="col-sm-2 col-form-label">전화번호 <input type="radio" name="" value="N" class="float-end mt-1"></label>
-                     <div class="col-sm-2">
-                        <select class="form-select form-select-sm" name="contactType">
-                           <option value="휴대폰"> 휴대폰</option>
-                           <option value="회사" selected> 회사</option>
-                           <option value="집"> 집</option>
-                           <option value="기타"> 기타</option>
-                        </select>
-                     </div>
-                     <div class="col-sm-6">
-                        <input type="text" class="form-control form-control-sm" name="contactTel" value="020-1234-5678">
-                     </div>
-                     <div class="col-sm-2 d-flex justify-content-end">
-                        <button type="button" class="btn btn-sm"><i class="bi bi-plus-circle"></i></button>
-                        <button type="button" class="btn btn-sm"><i class="bi bi-dash-circle"></i></button>
-                     </div>
-                  </div>
-               </div>
-               <div id="box-email" class="mb-3">
-                  <!-- 이메일이 추가되는 곳 -->
-                  <div class="row mb-1">
-                     <label class="col-sm-2 col-form-label">이메일 <input type="radio" name="" value="Y" checked class="float-end mt-1"></label>
-                     <div class="col-sm-8">
-                        <input type="text" class="form-control form-control-sm" name="emailAddr" value="hong@gmail.com">
-                     </div>
-                     <div class="col-sm-2 d-flex justify-content-end">
-                        <button type="button" class="btn btn-sm"><i class="bi bi-plus-circle"></i></button>
-                        <button type="button" class="btn btn-sm"><i class="bi bi-dash-circle"></i></button>
-                     </div>
-                  </div>
-                  <div class="row mb-1">
-                     <label class="col-sm-2 col-form-label">이메일 <input type="radio" name="" value="N" class="float-end mt-1"></label>
-                     <div class="col-sm-8">
-                        <input type="text" class="form-control form-control-sm" name="emailAddr" value="hong@gmail.com">
-                     </div>
-                     <div class="col-sm-2 d-flex justify-content-end">
-                        <button type="button" class="btn btn-sm"><i class="bi bi-plus-circle"></i></button>
-                        <button type="button" class="btn btn-sm"><i class="bi bi-dash-circle"></i></button>
-                     </div>
-                  </div>
-               </div>
-               <div class="row mb-3">
-                  <label class="col-sm-2 col-form-label">그룹</label>
-                  <div class="col-sm-5">
-                     <select class="form-select form-select-sm" name="groupNo">
-                        <option value="100"> 친구</option>
-                        <option value="102"> 회사</option>
-                        <option value="103" selected> 가족</option>
-                        <option value="104"> 모인</option>
-  /221219 충돌로인한 주석처리 나중에 확인후 삭제
-*/
-
                </div>
                <div id="box-email" class="mb-3">
                   <!-- 이메일이 추가되는 곳 -->
@@ -554,7 +466,6 @@
 		}
 	}
 %>
-
                      </select>
                   </div>
                </div>
@@ -572,42 +483,7 @@
                </div>
                <div id="box-address" class="mb-3">
                   <!-- 주소가 추가되는 곳 -->
-
-/*
-221219 충돌로인한 주석처리 나중에 확인후 삭제
-                  <div class="row mb-1">
-                     <label class="col-sm-2 col-form-label">주소 <input type="radio" name="" value="Y" checked class="float-end mt-1"></label>
-                     <div class="col-sm-3">
-                        <select class="form-select form-select-sm" name="addressType">
-                           <option value="회사" selected> 회사</option>
-                           <option value="집"> 집</option>
-                           <option value="기타"> 기타</option>
-                        </select>
-                     </div>
-                     <div class="col-sm-3">
-                        <input type="text" class="form-control form-control-sm" name="zipcode" value="1234" placeholder="우편번호">
-                     </div>
-                     <div class="col-sm-2">
-                        <button type="button" class="btn btn-outline-secondary btn-xs">우편번호 검색</button>
-                     </div>
-                     <div class="col-sm-2 d-flex justify-content-end">
-                        <button type="button" class="btn btn-sm"><i class="bi bi-plus-circle"></i></button>
-                        <button type="button" class="btn btn-sm"><i class="bi bi-dash-circle"></i></button>
-                     </div>
-                  </div>
-                  <div class="row mb-1">
-                     <div class="col-sm-10 offset-sm-2">
-                        <input type="text" class="form-control form-control-sm" name="basic" value="서울특별시 종로구" placeholder="기본주소">
-                     </div>
-                  </div>
-                  <div class="row mb-1">
-                     <div class="col-sm-10  offset-sm-2">
-                        <input type="text" class="form-control form-control-sm" name="detail" value="502호" placeholder="기본주소">
-                     </div>
-                  </div>
-/221219 충돌로인한 주석처리 나중에 확인후 삭제
-*/
-
+                  
                </div>
                <div class="row mb-1">
                   <label class="col-sm-2 col-form-label">메모</label>
@@ -619,9 +495,7 @@
          </div>
          <div class="modal-footer">
             <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">확인</button>
-
-            <button type="button" id="updateBtn" class="btn btn-dark btn-sm">수정</button>
-
+            <button type="button" class="btn btn-dark btn-sm">수정</button>
          </div>
       </div>
    </div>
@@ -1156,7 +1030,7 @@ $(function(){
 		let index = $(this).closest(".row").index();
 		$(":hidden[name=contact-index]").val(index); 	
 	})
-
+	
 	// 연락처 추가 - 기본 이메일 설정
 	$("#email-box").on('change', ':radio[name=email-default-radio]', function(){
 		let index = $(this).closest(".row").index();
@@ -1168,9 +1042,8 @@ $(function(){
 		let index = $(this).closest(".row").index();
 		$(":hidden[name=address-index]").val(index); 
 	})
-
-// 그룹 이동
-
+	
+	// 그룹
 	$("#btn-move-addr").click(function () {
 		var groupNo = $("#select-groups").val()
 		if (groupNo == "") {
@@ -1187,71 +1060,25 @@ $(function(){
 		$("#form-book").trigger("submit");
 	});
 
-//그룹 등록
-	$("#from-register-addrGroup").submit(function() {
-		let name = $(":input[name=name]").val();
-		
-		if (name === "") {
-			alert("그룹명은 필수입력 값입니다.");
-			return false;
-		}
-		
-		return true;
-	})
-
-
-
- /* 주소록 상세보기, 수정 폼 */
-$(function() {
-	   let addressDetailModal = new bootstrap.Modal("#modal-detail-address");
-	   
-	   $("#table-address-list tbody a").click(function(event) {
-	      event.preventDefault();
-	      // 클릭한 주소록의 주소록번호를 저장 
-	      var addressBookNo = $(this).attr("data-address-book-no");
-		  $("#updateBtn").click(function() {
-			  $("#updateForm input[name='addressBookNo']").val(addressBookNo);
-			  $("#updateForm").submit();
-		  });      
-	    	  
-	      addressDetailModal.show();
-	   })
-});
-
 	// 삭제버튼 클릭시 발생하는 이벤트
 	$("#deleteBtn").click(function() {
 		var addressBookNo = [];
 		
-		if ($("input[name=bookNo]:checked").length == 0) {
-			alert("삭제할 주소록을 선택하세요");
-			return false;
-		};
-		
 		// 선택한 주소록을 각각 배열에 담는다. 
-		$("input[name=bookNo]:checked").each(function(){
+		$("input[name=addressBookNo]:checked").each(function(){
 			 addressBookNo.push($(this).val());
 		});
+		
 		// 삭제할 주소록을 deleteAddress.jsp에 보낸다.
 		location.href = "deleteAddress.jsp?addressBookNo="+addressBookNo;
 	});
 	
-	// 완전삭제 버튼 클릭시 발생하는 이벤트
-	$("#compleetDeleteBtn").click(function() {
-		var addressBookNo = [];
+	// 페이지 번호 클릭했을때 발생하는 이벤트
+	function changePage(event,page) {
+		event.preventDefault();
 		
-		if (addressBookNo == "") {
-			alert("완전삭제할 주소록을 선택하세요");
-			return false;
-		};
-		
-		// 선택한 주소록을 각각 배열에 담는다. 
-		$("input[name=bookNo]:checked").each(function(){
-			 addressBookNo.push($(this).val());
-		});
-		
-		// 삭제할 주소록을 deleteAddress.jsp에 보낸다.
-		location.href = "completeDeleteAddress.jsp?addressBookNo="+addressBookNo;
-	})
+		submitForm(page);
+	}
 	
 	// form 태그 전송
 	function submitForm(page) {
@@ -1262,28 +1089,25 @@ $(function() {
 
 	// 휴지통 클릭했을 때 이벤트
 	$("#wastebasket").click(function(){
-		$("#deleteBtn").addClass("d-none");
-		$("#compleetDeleteBtn").removeClass("d-none");
+		var employeeNo = $(this).attr("data-employee-no");
 		
 		wastbasketList();
 	});
 
+	
 	// ajax사용해서 삭제한 주소록 목록 조회하는 함수
 	function wastbasketList() {
 		
-
-		$.getJSON("wastebasket.jsp", {empNo:<%=loginEmployee.getNo() %>}, function(address){
-
+		$.getJSON("wastebasket.jsp", {empNo:<%=empNo %>}, function(address){
 			// 주소록 갯수를 조회해서 내 주소록의 갯수를 변경한다.
-			var addressList = result.addressList;
-			var count = addressList.length;
+			var count = address.length;
 			$("#addressCount").text(count);
 			
 			var html = "";
 			var nav = "";
 
 			// 삭제한 주소록이 없을때
-			if (addressList.length < 1) {
+			if (address.length < 1) {
 				html += '<tr>';
 				html += '<td colspan="8" class="text-center">휴지통이 비어있습니다.</td>'
 				html += '</tr>';
@@ -1297,15 +1121,15 @@ $(function() {
 			}
 			
 			// 삭제한 주소록 목록
-			for (var i = 0; i < addressList.length; i++) {
-				var addr = addressList[i];
+			for (var i = 0; i < address.length; i++) {
+				var addr = address[i];
 				
 				html += '<tr>';
-				html += 	'<td class="text-center"><input type="checkbox" name="bookNo" value="'+ addr.bookNo +'"/></td>'
+				html += 	'<td class="text-center"><input type="checkbox" name="" value=""/></td>'
 				html += 	'<td><i class="bi bi-star-fill text-success text-border"></i></td>'
 				html += 	'<td>'+ addr.lastName+addr.firstName +'</td>'
 				html += 	'<td>'+ addr.tel +'</td>'
-				html += 	'<td>'+ addr.addr +'</td>'
+				html += 	'<td>'+ addr.email +'</td>'
 				html += 	'<td>'+ addr.company +'</td>'
 				html += 	'<td>'+ addr.dept +'</td>'
 				html += 	'<td>'+ addr.position +'</td>'
@@ -1315,86 +1139,39 @@ $(function() {
 			}
 			
 			// 페이징 처리
-			var paging = result.paging;
-		 	var nav = `
+			var nav = `
+			<%
+			
+			if (totalRows >= 1) {
+				
+			%>
 					<ul class="pagination pagination-sm justify-content-center">	
 						<li class="page-item">
-							<a class="page-link \${result.isFirst ? 'disabled' : ''}" href="home.jsp?page=\${result.prevPage}">이전</a>
-						</li>`
-			
-					for (let number = result.beginPage; number <= result.endPage; number++) {
-						
-						nav += `<li class="page-item">
-							       <a class="page-link \${result.currentPage == number ? 'active' : ''}" href="home.jsp?page=\${number}" data-page-no="\${number}">\${number}</a>
-								</li>`
+							<a class="page-link <%=pagination.isFirst()? "disabled" : "" %>" href="wastebasketList.jsp?page=<%=pagination.getPrevPage() %>">이전</a>
+						</li>
+				<%
+					for (int number = pagination.getBeginPage(); number <= pagination.getEndPage(); number++) {
+				%>
+						<li class="page-item">
+							<a class="page-link <%=currentPage == number? "active" : "" %>" href="wastebasketList.jsp?page=<%=number %>" onclick="changePage(event, <%=number %>);"><%=number %></a>
+						</li>
+				<%
 					}
-				
-				nav += `<li class="page-item">
-							<a class="page-link \${paging.isLast ? 'disabled' : ''}" href="home.jsp?page=\${result.nextPage}">다음</a>
+				%>	
+						<li class="page-item">
+							<a class="page-link <%=pagination.isLast()? "disabled" : "" %>" href="wastebasketList.jsp?page=<%=pagination.getNextPage() %>">다음</a>
 						</li>
 					</ul>
-					
+			<%
+				} 
+			%>			
 			`;
 			
-			$("#nav").html(nav); 
+			$("#nav").html(nav);
 		});
+	}
 
-	};
-	/* $("#nav .pagination").on('click', '.page-link', function(event){
-		event.preventdefault();
-		
-		var pageNo = $(this).attr("data-page-no");
-		console.log(pageNo);
-	}); */
-	
-	$("#nav .pagination .page-link").click(function(event){
-		event.preventDefault();
-		
-		var page = $(this).attr("data-page-no");
-		console.log(page);
-		
-		$.getJSON("wastebasket.jsp", {empNo:<%=empNo %>, pageNo:page}, function(result){
-			// 주소록 갯수를 조회해서 내 주소록의 갯수를 변경한다.
-			var addressList = result.addressList;
-			var count = addressList.length;
-			$("#addressCount").text(count);
-			
-			var html = "";
-			var nav = "";
-
-			// 삭제한 주소록이 없을때
-			if (addressList.length < 1) {
-				html += '<tr>';
-				html += '<td colspan="8" class="text-center">휴지통이 비어있습니다.</td>'
-				html += '</tr>';
-				
-				$("#book-table tbody").html(html);
-				
-				nav += "<ul style='display:none;'></ul>";
-				$("#nav").html(nav);
-				
-				return;
-			}
-			
-			// 삭제한 주소록 목록
-			for (var i = 0; i < addressList.length; i++) {
-				var addr = addressList[i];
-				
-				html += '<tr>';
-				html += 	'<td class="text-center"><input type="checkbox" name="bookNo" value="'+ addr.bookNo +'"/></td>'
-				html += 	'<td><i class="bi bi-star-fill text-success text-border"></i></td>'
-				html += 	'<td>'+ addr.lastName+addr.firstName +'</td>'
-				html += 	'<td>'+ addr.tel +'</td>'
-				html += 	'<td>'+ addr.addr +'</td>'
-				html += 	'<td>'+ addr.company +'</td>'
-				html += 	'<td>'+ addr.dept +'</td>'
-				html += 	'<td>'+ addr.position +'</td>'
-				html += '</tr>';
-				
-				$("#book-table tbody").html(html);
-			}
-		});
-	}); 
+})
 </script>
 </body>
 </html>
