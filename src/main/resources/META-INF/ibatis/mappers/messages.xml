@@ -9,22 +9,227 @@
 		FROM DUAL
 	</select>
 	
+	<select id="getTotalRows" parameterClass="map" resultClass="int">
+		SELECT COUNT(*)
+		FROM SEMI_MESSAGES
+		WHERE
+		<dynamic>
+			<isEqual property="group" compareValue="all">
+			(MESSAGE_NO IN (SELECT MESSAGE_NO	<!-- 받은 쪽지 -->		
+                            FROM SEMI_MESSAGE_RECEIVERS
+                            WHERE EMP_NO = #empNo# <!-- #empNo# -->
+                            AND MESSAGE_DELETED = 'N') OR
+             MESSAGE_NO IN (SELECT MESSAGE_NO
+                            FROM SEMI_MESSAGE_DEPARTMENTS
+                            WHERE DEPARTMENT_NO = #deptNo#) <!-- #deptNo# -->
+    		OR (MESSAGE_SEND_EMP_NO = #empNo# <!-- #empNo# --> <!-- 내게 쓰기를 제외한 보낸 쪽지 -->	
+          		AND MESSAGE_SENT_BOX = 'Y'
+          		AND MESSAGE_DELETED = 'N'))                           
+    		AND MESSAGE_CONTENT LIKE '%' || #keyword# || '%' <!-- #keyword# -->
+			</isEqual>
+			
+			<isEqual property="group" compareValue="receive"> <!-- 내게 쓰기를 제외한 받은 쪽지 -->	
+		    (MESSAGE_NO IN (SELECT MESSAGE_NO
+		                   FROM SEMI_MESSAGE_RECEIVERS
+		                   WHERE EMP_NO = #empNo# <!-- #empNo# -->
+		                   AND MESSAGE_DELETED = 'N') OR
+		    MESSAGE_NO IN (SELECT MESSAGE_NO
+                           FROM SEMI_MESSAGE_DEPARTMENTS
+                           WHERE DEPARTMENT_NO = #deptNo#))
+          	AND NOT MESSAGE_SEND_EMP_NO = #empNo#                                        
+		    AND MESSAGE_CONTENT LIKE '%' || #keyword# || '%' <!-- #keyword# -->
+			</isEqual>
+			
+			<isEqual property="group" compareValue="send"> <!-- 내게 쓰기를 제외한 보낸 쪽지 -->	
+			MESSAGE_SEND_EMP_NO = #empNo# <!-- #empNo# -->
+		    AND MESSAGE_SENT_BOX = 'Y'
+		    AND MESSAGE_DELETED = 'N'
+		    AND MESSAGE_ME = 'N'
+		    AND MESSAGE_CONTENT LIKE '%' || #keyword# || '%' <!-- #keyword# -->
+			</isEqual>
+			
+			<isEqual property="group" compareValue="me">
+			MESSAGE_SEND_EMP_NO = #empNo# <!-- #empNo# -->
+		    AND MESSAGE_DELETED = 'N'
+		    AND MESSAGE_ME = 'Y'
+		    AND MESSAGE_CONTENT LIKE '%' || #keyword# || '%' <!-- #keyword# -->
+			</isEqual>
+		</dynamic>
+	</select>
+	
+	<select id="getMessageList" parameterClass="map" resultClass="com.semi.message.vo.Message">
+		SELECT 
+		    MESSAGE_NO 				as messageNo,
+            MESSAGE_ME 				as messageMe,
+            MESSAGE_SENT_BOX		as messageSentBox,
+            MESSAGE_SAVE_BOX		as messageSaveBox,
+            MESSAGE_READING			as messageReading,
+            MESSAGE_CANCEL			as messageCancel,
+            MESSAGE_DELETED			as messageDeleted,
+            MESSAGE_SPAM			as messageSpam,
+            MESSAGE_CONTENT			as messageContent,
+            MESSAGE_SEND_EMP_NO		as messageSendEmpNo,
+            MESSAGE_SEND_DATE		as messageSendDate,
+            MESSAGE_RECEIVE_DATE	as messageReceiveDate,
+            MESSAGE_DELETED_DATE	as messageDeletedDate,
+            GROUP_NO				as groupNo,
+            MESSAGE_TYPE			as messageType
+		FROM(
+    		SELECT 
+               ROW_NUMBER() OVER (ORDER BY MESSAGE_SEND_DATE DESC) AS ROW_NUMBERS,
+               MESSAGE_NO, 
+               MESSAGE_ME, 
+               MESSAGE_SENT_BOX, 
+               MESSAGE_SAVE_BOX, 
+               MESSAGE_READING, 
+               MESSAGE_CANCEL, 
+               MESSAGE_DELETED, 
+               MESSAGE_SPAM, 
+               MESSAGE_CONTENT, 
+               MESSAGE_SEND_EMP_NO, 
+               MESSAGE_SEND_DATE, 
+               MESSAGE_RECEIVE_DATE, 
+               MESSAGE_DELETED_DATE, 
+               GROUP_NO, 
+               MESSAGE_TYPE
+    		FROM  
+               SEMI_MESSAGES 
+    		WHERE
+    		<dynamic>
+	    		<isEqual property="group" compareValue="all">
+	            (MESSAGE_NO IN (SELECT MESSAGE_NO
+	                            FROM SEMI_MESSAGE_RECEIVERS
+	                            WHERE EMP_NO = #empNo#
+	                            AND MESSAGE_DELETED = 'N') OR
+	             MESSAGE_NO IN (SELECT MESSAGE_NO
+                            	FROM SEMI_MESSAGE_DEPARTMENTS
+                            	WHERE DEPARTMENT_NO = #deptNo#)
+	            OR (MESSAGE_SEND_EMP_NO = #empNo#
+	            	AND MESSAGE_SENT_BOX = 'Y'
+	                AND MESSAGE_DELETED = 'N'))                           
+	            AND MESSAGE_CONTENT LIKE '%' || #keyword# || '%'
+	    		</isEqual>
+	    		
+	    		<isEqual property="group" compareValue="receive">
+	    		(MESSAGE_NO IN (SELECT MESSAGE_NO
+	                           FROM SEMI_MESSAGE_RECEIVERS
+	                           WHERE EMP_NO = #empNo#
+	                           AND MESSAGE_DELETED = 'N') OR
+	            MESSAGE_NO IN (SELECT MESSAGE_NO
+                               FROM SEMI_MESSAGE_DEPARTMENTS
+                               WHERE DEPARTMENT_NO = #deptNo#))
+	            AND NOT MESSAGE_SEND_EMP_NO = #empNo#                            
+	            AND MESSAGE_CONTENT LIKE '%' || #keyword# || '%'
+	    		</isEqual>
+	    		
+	    		<isEqual property="group" compareValue="send">
+	            MESSAGE_SEND_EMP_NO = #empNo#
+	            AND MESSAGE_SENT_BOX = 'Y'
+	            AND MESSAGE_DELETED = 'N'
+	            AND MESSAGE_ME = 'N'
+	            AND MESSAGE_CONTENT LIKE '%' || #keyword# || '%'   		
+	    		</isEqual>
+	    		
+	    		<isEqual property="group" compareValue="me">
+	            MESSAGE_SEND_EMP_NO = #empNo#
+	            AND MESSAGE_DELETED = 'N'
+	            AND MESSAGE_ME = 'Y'
+	            AND MESSAGE_CONTENT LIKE '%' || #keyword# || '%'   		
+	    		</isEqual>
+    		</dynamic>
+				)
+		WHERE
+    		ROW_NUMBERS BETWEEN #begin# AND #end#	
+	</select>
+	
+	<select id="getEmpReceiverByMessageNo" parameterClass="int" resultClass="com.semi.message.vo.MessageReceiver">
+		SELECT 
+    		M.MESSAGE_NO 				as messageNo,
+    		M.EMP_NO					as empNo,
+            E.EMP_NAME                 	as empName,
+    		MESSAGE_RECEIVE_DATE		as messageReceiveDate,
+    		MESSAGE_DELETED				as messageDeleted
+		FROM 
+    		SEMI_MESSAGE_RECEIVERS M, SEMI_EMPLOYEES E
+		WHERE 
+    		M.MESSAGE_NO = #value#
+            AND M.EMP_NO = E.EMP_NO
+	</select>
+	
+	<select id="getDeptReceiverByMessageNo" parameterClass="int" resultClass="com.semi.message.vo.MessageDepartment">
+		SELECT 
+    		M.MESSAGE_NO 			as messageNo,
+    		M.DEPARTMENT_NO			as deptNo,
+            D.DEPARTMENT_NAME		as deptName
+		FROM 
+    		SEMI_MESSAGE_DEPARTMENTS M, SEMI_DEPARTMENTS D
+		WHERE 
+    		M.MESSAGE_NO = #value#
+            AND M.DEPARTMENT_NO = D.DEPARTMENT_NO
+	</select>
+	
+	<select id="getDeptList" resultClass="com.semi.admin.vo.Department">
+		SELECT 
+    		DEPARTMENT_NO		as no,
+    		DEPARTMENT_NAME		as name
+		FROM
+    		SEMI_DEPARTMENTS
+	</select>
+	
+	<select id="getEmpList" resultClass="com.semi.admin.vo.Employee">
+		SELECT
+    		EMP_NO     as no,
+    		EMP_NAME   as name
+		FROM
+    		SEMI_EMPLOYEES
+	</select>
+	
 	<insert id="sendMessage" parameterClass="com.semi.message.vo.Message">
 		INSERT INTO SEMI_MESSAGES
-    		(MESSAGE_NO, MESSAGE_ME, MESSAGE_SENT_BOX, MESSAGE_CONTENT, MESSAGE_SEND_EMP_NO, MESSAGE_TYPE)
+    		(MESSAGE_NO, MESSAGE_ME, MESSAGE_SENT_BOX, MESSAGE_CONTENT, MESSAGE_SEND_EMP_NO, GROUP_NO, MESSAGE_TYPE)
 		VALUES
-    		(#messageNo#, #messageMe#, #messageSentBox#, #messageContent#, #messageSendEmpNo#, #messageType#)
+    		(#messageNo#, #messageMe#, #messageSentBox#, #messageContent#, #messageSendEmpNo#, #groupNo#, #messageType#)
 	</insert>
 	
-	<insert id="receiveMessageEmployee" parameterClass="com.semi.message.vo.MessageReceivers">
+	<insert id="receiveMessageEmployee" parameterClass="com.semi.message.vo.MessageReceiver">
 		INSERT INTO SEMI_MESSAGE_RECEIVERS
     		(MESSAGE_NO, EMP_NO)
 		VALUES
-    		(#messageNo#, #messageReceiveEmpNo#)
+    		(#messageNo#, #empNo#)
 	</insert>
 	
+	<insert id="receiveMessageDepartment" parameterClass="com.semi.message.vo.MessageDepartment">
+		INSERT INTO SEMI_MESSAGE_DEPARTMENTS
+    		(MESSAGE_NO, DEPARTMENT_NO)
+		VALUES
+    		(#messageNo#, #deptNo#)
+	</insert>
 	
+	<update id="deleteReceiveMessage" parameterClass="com.semi.message.dto.MessageDeleteDto">
+		UPDATE SEMI_MESSAGE_RECEIVERS
+		SET MESSAGE_DELETED = 'Y'
+		WHERE EMP_NO = #empNo#
+		AND MESSAGE_NO = #messageNo#
+	</update>
 	
+	<update id="deleteSendMessage" parameterClass="com.semi.message.dto.MessageDeleteDto">
+		UPDATE SEMI_MESSAGES
+		SET MESSAGE_DELETED = 'Y', MESSAGE_DELETED_DATE = SYSDATE
+		WHERE MESSAGE_SEND_EMP_NO = #empNo#
+		AND MESSAGE_NO = #messageNo#
+	</update>
+	
+	<update id="clearReceiveMessage" parameterClass="int">
+	    UPDATE SEMI_MESSAGE_RECEIVERS
+        SET MESSAGE_DELETED = 'Y'
+        WHERE EMP_NO = #value#
+	</update>
+	
+	<update id="clearSendMessage" parameterClass="int">
+		UPDATE SEMI_MESSAGES 
+		SET MESSAGE_DELETED = 'Y', MESSAGE_DELETED_DATE = SYSDATE
+		WHERE MESSAGE_SEND_EMP_NO = #value#
+	</update>
 </sqlMap>
 
 

@@ -79,6 +79,7 @@
 		from
 			semi_employees
 		where
+			emp_no = #value#
 			emp_email = #value#
 	</select>
 	
