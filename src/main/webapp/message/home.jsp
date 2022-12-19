@@ -1,3 +1,4 @@
+<%@page import="com.semi.admin.vo.Employee"%>
 <%@page import="com.semi.message.vo.Message"%>
 <%@page import="java.util.List"%>
 <%@page import="com.semi.util.Pagination"%>
@@ -8,6 +9,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!-- logincheck.jsp 삽입 필요 -->
+<%@ include file="../logincheck.jsp" %>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -24,7 +27,6 @@
 </jsp:include>
 <%
 
-	int userEmpNo = 1000;	// logincheck.jsp로부터 가져와야 하는 값, 1000은 임의의 값임.
 	String group = StringUtils.nullToBlank(request.getParameter("group"));
 	String keyword = StringUtils.nullToBlank(request.getParameter("keyword"));
 	int currentPage = StringUtils.stringToInt(request.getParameter("pageNo"), 1);
@@ -79,7 +81,7 @@
 					<!------------------------------ 검색 폼 시작 ------------------------------>
 					<form class="row row-cols-lg-auto align-items-center me-3">
 						<div class="col-12">
-							<input type="hidden" name="userEmpNo" value="<%=userEmpNo %>">
+							<input type="hidden" name="userEmpNo" value="<%=loginEmployee.getNo() %>">
 							<input type="hidden" name="pageNo" value="<%=currentPage %>">
 							<select class="form-select form-select-sm" name="group">
 								<option value=""> 전체쪽지</option>

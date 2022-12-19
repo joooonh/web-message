@@ -1,9 +1,12 @@
+<%@page import="com.semi.admin.vo.Employee"%>
 <%@page import="com.semi.memo.vo.Memo"%>
 <%@page import="com.semi.memo.dao.MemoDao"%>
 <%@page import="java.util.List"%>
 <%@page import="com.semi.util.StringUtils"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ include file="../logincheck.jsp" %>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -19,9 +22,9 @@
 	<jsp:param name="menu" value="home"/>
 </jsp:include>
 <% 
-	int empNo = 1006; 
+
 	MemoDao memoDao= new MemoDao();
- 	List<Memo> memoList= memoDao.selectSemiMemosByEmpNo(empNo);
+ 	List<Memo> memoList= memoDao.selectSemiMemosByEmpNo(loginEmployee.getNo());
  	
  	
 %>

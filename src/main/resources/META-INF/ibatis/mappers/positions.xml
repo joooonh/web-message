@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="positions">
+	
+	<select id="getAllPositions" resultClass="com.semi.admin.vo.Position">
+		select
+			position_no as no,
+			position_name as name,
+			position_seq as seq
+		from
+			semi_positions
+	</select>
+</sqlMap>
+
