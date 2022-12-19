@@ -9,9 +9,9 @@
 	String[] values = values1.split(",");
 
 	AddressBookDao addressBookDao = new AddressBookDao();
-	AddressDao addressDao = new AddressDao();
-	ContactDao contactDao = new ContactDao();
-	EmailDao emailDao = new EmailDao();
+	AddressDao addressDao = AddressDao.getInstance();
+	ContactDao contactDao = ContactDao.getInstance();
+	EmailDao emailDao = EmailDao.getInstance();
 	
 	// 배열에 담긴 주소록번호를 삭제하는 수행문을 반복한다.
 	for (String value : values) {

@@ -50,7 +50,7 @@
 	
 	addressBookDao.updateAddressBook(addressBook);
 	
-	ContactDao contactDao = new ContactDao();
+	ContactDao contactDao = ContactDao.getInstance();
 	contactDao.deleteContactByBookNo(addressBookNo);
 	// Contact 객체 생성해서 전달받은 값을 저장
 	for (int i = 0; i < telList.length; i++) {
@@ -65,7 +65,7 @@
 		contactDao.insertContact(contact);
 	}
 	
-	EmailDao emailDao = new EmailDao();
+	EmailDao emailDao = EmailDao.getInstance();
 	// Email 객체 생성해서 전달받은 값을 저장
 	emailDao.deleteByBookNo(addressBookNo);
 	
@@ -78,7 +78,7 @@
 		emailDao.insertEmail(email);
 	}
 
-	AddressDao addressDao = new AddressDao();
+	AddressDao addressDao = AddressDao.getInstance();
 	addressDao.deleteAddressByBookNo(addressBookNo);
 	// Address 객체 생성해서 전달받은 값을 저장
 	for (int i = 0; i < zipcodeList.length; i++) {
