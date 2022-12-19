@@ -28,12 +28,11 @@
 			addr_book_no = #value#
 	</select>
 	
-	<!-- 사진, groupNo 넣기 -->
 	<insert id="insertEmail" parameterClass="com.semi.address.vo.Email">
 		insert into semi_address_emails
-			(email_addr, addr_book_no)
+			(email_addr, email_default_yn, addr_book_no)
 		values
-			(#addr#, #bookNo#)
+			(#addr#, #defaultYN#, #bookNo#)
 	</insert>
 	
 </sqlMap>

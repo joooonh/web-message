@@ -7,6 +7,12 @@ import com.semi.util.SqlMapper;
 
 public class ContactDao {
 	
+	private static ContactDao instance = new ContactDao();
+	private ContactDao() {}
+	public static ContactDao getInstance() {
+		return instance;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public List<Contact> getContactsByBookNo(int bookNo) {
 		return (List<Contact>) SqlMapper.selectList("contacts.getContactsByBookNo", bookNo);
