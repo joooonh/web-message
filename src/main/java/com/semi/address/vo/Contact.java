@@ -7,6 +7,8 @@ public class Contact {
 	private String defaultYN;
 	private int bookNo;
 	
+	public Contact() {}
+	
 	public String getType() {
 		return type;
 	}

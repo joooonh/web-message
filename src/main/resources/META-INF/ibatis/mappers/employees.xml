@@ -4,6 +4,85 @@
  
 <sqlMap namespace="employees">
 
+	<select id="getTotalRows" parameterClass="map" resultClass="int">
+		select
+			count(*)
+		from
+			semi_employees
+	</select>
+	
+	<insert id="insertEmployee" parameterClass="com.semi.admin.vo.Employee">
+		insert into semi_employees
+			(emp_no, emp_password, emp_name, emp_email, emp_phone, emp_dept_no, emp_position_no, emp_type)
+		values
+			(semi_employees_seq.nextval, #password#, #name#, #email#, #phone#, #deptNo#, #positionNo#, #type#)
+	</insert>
+	
+	<select id="getEmployees" parameterClass="map" resultClass="com.semi.admin.dto.EmployeeDto">
+		select
+			E.emp_no as empNo,
+			E.emp_photo as photo,
+			E.emp_name as name,
+			E.emp_email as email,
+			E.emp_phone as phone,
+			E.emp_dept_no as deptNo,
+			E.emp_position_no as positionNo,
+			E.emp_deleted as deleted,
+			E.emp_created_date as createdDate,
+			E.emp_updated_date as updatedDate,
+			E.emp_deleted_date as deletedDate,
+			E.emp_type as type,
+			D.department_name as departmentName,
+			P.position_name as positionName,
+			P.position_seq as positionSeq
+		from
+			(select 
+				row_number() over (order by emp_no desc) row_numbers,
+				emp_no,
+				emp_photo,
+				emp_name,
+				emp_email,
+				emp_phone,
+				emp_dept_no,
+				emp_position_no,
+				emp_deleted,
+				emp_created_date,
+				emp_updated_date,
+				emp_deleted_date,
+				emp_type
+			from
+				semi_employees
+				) E, semi_departments D, semi_positions P
+			where
+				E.emp_dept_no = D.department_no
+				and E.emp_position_no = P.position_no
+				and row_numbers between #begin# and #end#
+			order by
+				E.emp_no desc
+	</select>
+	
+	<select id="getEmployeeByEmail" parameterClass="String" resultClass="com.semi.admin.vo.Employee">
+		select 
+			emp_no as no,
+			emp_password as password,
+			emp_photo as photo,
+			emp_name as name,
+			emp_email as email, 
+			emp_phone as phone,
+			emp_dept_no as deptNo,
+			emp_position_no as positionNo,
+			emp_deleted as deleted,
+			emp_created_date as createdDate,
+			emp_updated_date as updatedDate,
+			emp_deleted_date as deletedDate,
+			emp_type as type
+		from
+			semi_employees
+		where
+			emp_no = #value#
+			emp_email = #value#
+	</select>
+	
 	<select id="getEmployeeByNo" parameterClass="int" resultClass="com.semi.admin.vo.Employee">
 		select 
 			emp_no as no,
@@ -17,20 +96,40 @@
 			emp_deleted as deleted,
 			emp_created_date as createdDate,
 			emp_updated_date as updatedDate,
-			emp_deleted_date as deletedDate
+			emp_deleted_date as deletedDate,
+			emp_type as type
 		from
 			semi_employees
 		where
+			emp_deleted = 'Y'
+		and
 			emp_no = #value#
 	</select>
 	
-	<select id="getTotalRows" resultClass="int">
-		select 
-			count(*)
+	<select id="getAllEmployees" resultClass="com.semi.admin.vo.Employee">
+		select
+			emp_no as no,
+			emp_password as password,
+			emp_photo as photo,
+			emp_name as name,
+			emp_email as email, 
+			emp_phone as phone,
+			emp_dept_no as deptNo,
+			emp_position_no as positionNo,
+			emp_deleted as deleted,
+			emp_created_date as createdDate,
+			emp_updated_date as updatedDate,
+			emp_deleted_date as deletedDate,
+			emp_type as type
 		from
 			semi_employees
+		where
+			emp_deleted = 'Y'
+	 	order by 
+	 		emp_no desc
 	</select>
 	
+	<!--  
 	<select id="getEmployees" parameterClass="com.semi.util.Pagination" resultClass="com.semi.admin.vo.Employee">
 		select 
 			emp_no as no,
@@ -44,7 +143,8 @@
 			emp_deleted as deleted,
 			emp_created_date as createdDate,
 			emp_updated_date as updatedDate,
-			emp_deleted_date as deletedDate
+			emp_deleted_date as deletedDate,
+			emp_type
 		from (select
 				row_number() over (order by emp_no desc) row_numbers,
 				emp_no,
@@ -58,11 +158,32 @@
 				emp_deleted,
 				emp_created_date,
 				emp_updated_date,
-				emp_deleted_date
+				emp_deleted_date,
+				emp_type
 			from
 				semi_employees)
 		where
 			row_numbers between #begin# and #end#
 	</select>
+	-->
+	
+	<update id="updateEmployee" parameterClass="com.semi.admin.vo.Employee">
+		update
+			semi_employees
+		set
+			emp_password = #password#,
+			emp_photo = #photo#,
+			emp_name = #name#,
+			emp_email = #email#, 
+			emp_phone = #phone#,
+			emp_dept_no = #deptNo#,
+			emp_position_no = #positionNo#,
+			emp_deleted = #deleted#,
+			emp_updated_date = sysdate,
+			emp_deleted_date = #deletedDate#,
+			emp_type = #type#
+		where
+			emp_no = #no#
+	</update>
 </sqlMap>
 

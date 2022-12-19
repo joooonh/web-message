@@ -12,7 +12,7 @@
 	for (String value : values) {
 		int addressBookNo = Integer.parseInt(value);
 		
-		// 주소록번호로 addressDto객체를 획득한다.
+		// 주소록번호로 AddressBook객체를 획득한다.
 		AddressBook addressBook = addressDao.getAddressBookByBookNo(addressBookNo);
 		// 주소록번호에 해당하는 주소록의 삭제여부를 Y로 변경한다.
 		addressBook.setDeleted("Y");
