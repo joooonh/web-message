@@ -9,6 +9,7 @@
 <%@page import="com.semi.address.dao.BookDao"%>
 <%@page import="com.semi.util.StringUtils"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
+<%@ include file="../logincheck.jsp" %>
 <%
 
 	// Book 객체 
@@ -38,6 +39,9 @@
 	String[] address1Array = request.getParameterValues("addr1");
 	String[] address2Array = request.getParameterValues("addr2");
 	
+	// session에서 로그인된 직원번호 조회
+	int empNo = loginEmployee.getNo();
+	
 	// BookDao 객체 얻기 
 	BookDao bookDao = BookDao.getInstance();
 	// 주소록 번호 저장
@@ -54,6 +58,7 @@
 	book.setPosition(positionName);
 	book.setMemo(memo);
 	book.setImportant(important); 
+	book.setEmpNo(empNo);
  
 	bookDao.insertBook(book); 
 	
@@ -64,6 +69,11 @@
 		
 	// Contact 연락처 넣기 
 	for(int i=0; i<contactTypeArray.length; i++){
+		
+		if(telArray[i].isBlank()){
+			continue;
+		}
+			
 		Contact contact = new Contact(); 
 		contact.setType(contactTypeArray[i]); 
 		contact.setTel(telArray[i]); 
@@ -80,6 +90,11 @@
 	
 	// 이메일 넣기 
 	for(int i=0; i<emailArray.length; i++){
+		
+		if(emailArray[i].isBlank()){
+			continue;
+		}
+		
 		Email email = new Email(); 
 		email.setAddr(emailArray[i]);
 		email.setBookNo(bookNo); 
@@ -95,6 +110,11 @@
 	
 	// 주소 넣기 
 	for(int i=0; i<zipcodeArray.length; i++){
+		
+		if(zipcodeArray[i].isBlank() || address1Array[i].isBlank() || address2Array[i].isBlank()){
+			continue;
+		}
+		
 		Address address = new Address(); 
 		address.setType(addrTypeArray[i]);
 		address.setZipcode(zipcodeArray[i]);

@@ -50,7 +50,7 @@
 	String opt = StringUtils.nullToBlank(request.getParameter("opt"));
 	String keyword = StringUtils.nullToBlank(request.getParameter("keyword"));
 
-	// 전체 페이지
+	// 전체 페이지 (이름 기준)
 	BookDao bookDao = BookDao.getInstance();
 	int totalRows = bookDao.getTotalRows(empNo); 
 	
@@ -68,7 +68,6 @@
 		param.put("keyword", keyword);
 	} 
 	param.put("empNo", loginEmployee.getNo());
-	
 	param.put("begin", pagination.getBegin()); 
 	param.put("end", pagination.getEnd()); 
 	
