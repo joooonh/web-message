@@ -19,6 +19,8 @@ public class Book {
 	private Date deletedDate;
 	private Integer employeeNo;
 	
+	public Book() {}
+	
 	public int getBookNo() {
 		return bookNo;
 	}
