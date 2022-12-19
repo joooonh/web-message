@@ -21,30 +21,6 @@
 %>
 <div class="container my-3">
 	<div class="row mb-3">
-		<div class="col">
-			<h1 class="heading">내 정보 보기</h1>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<div class="col-3">
-			<div class="card">
-				<div class="card-header">나의 메뉴</div>
-				<div class="card-body">
-					<div class="list-group">
-						<a href="" class="list-group-item list-group-item-action">내 정보 보기</a>
-						<a href="" class="list-group-item list-group-item-action">내가 작성한 게시글</a>
-						<a href="" class="list-group-item list-group-item-action">내가 작성한 댓글</a>
-						<a href="" class="list-group-item list-group-item-action">나에게 온 알림</a>
-						<a href="" class="list-group-item list-group-item-action">나에게 온 알림</a>
-					</div>
-				</div>
-				<div class="card-body">
-					<div class="list-group">
-						<a href="" class="list-group-item list-group-item-action active">비밀번호 변경하기</a>
-					</div>
-				</div>
-			</div>
-		</div>
 		<div class="col-9">
 			<div class="row mb-3">
 				<div class="col-12">
