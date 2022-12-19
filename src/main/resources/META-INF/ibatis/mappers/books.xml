@@ -40,7 +40,10 @@
 				addr_deleted_date	as deletedDate,
 				emp_no				as employeeNo
 			  from
-			  	semi_address_books)
+			  	semi_address_books
+			  <!-- 삭제여부가 'N' 인 주소록 -->
+			  where
+			  	addr_deleted = 'N')
 		where
 			rowNumber between #begin# and #end#
 	</select>

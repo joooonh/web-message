@@ -117,7 +117,7 @@
 		%>
 									</ul>
 								</li>
-				  				<li id="wastebasket" data-employee-no="<%=empNo %>"><span><i class="bi bi-trash me-2"></i>휴지통</span></li>
+				  				<li id="wastebasket"><span><i class="bi bi-trash me-2"></i>휴지통</span></li>
 				  				<li><span><i class="bi bi-question-square-fill me-2"></i>이름없는 연락처</span></li>
 							</ul>
 						</div>
@@ -149,6 +149,7 @@
 			<form id="form-book" method="get" action="move.jsp">
 				<div class="col-12 mn-3">
 					<a href="javascript:void(0);" id="deleteBtn" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> 삭제</a>
+					<a href="javascript:void(0);" id="compleetDeleteBtn" class="btn btn-outline-danger btn-sm d-none"><i class="bi bi-trash"></i> 완전삭제</a>
 					<select class="form-select form-select-sm d-inline" name="groupNo" style="width: 200px;" id="select-groups">
 						<option value=""> 이동할 그룹 선택</option>
 		<%
@@ -168,7 +169,7 @@
 			</div>
 			<div class="row mb-2">
 				<div class="col" id="book-table">
-					<table class="table table-sm border-top">
+					<table class="table table-sm border-top" id="table-address-list">
 						<colgroup>
 							<col width="5%">
 							<col width="5%">
@@ -207,15 +208,18 @@
 			// 하나의 주소록번호에 contact, email 여러개
 			// 기본주소록만 목록에 표시
 			Contact contact = contactDao.getDefaultContactByBookNo(bookNo);
-			Email email = emailDao.getEmailsByBookNo(bookNo); 
+			// bookNo에 해당하는 이메일 정보 출력
+			Email email = emailDao.getDefaultEmailByBookNo(bookNo); 
 %>
 							<tr>
 
-								<td><input type="checkbox" name="bookNo" value="<%=bookNo %>"/></td>
+								<td class="text-center"><input type="checkbox" name="bookNo" value="<%=bookNo %>"/></td>
 								<td><i class="bi bi-star text-success" ></i></td>
-								<td><%=book.getFirstName()%><%=book.getLastName() %></td>
-								<td><%=contact.getTel() %></td>
-								<td><%=email.getAddr() %></td>
+								<td>
+									<a href="" class="text-decoration-none" data-address-book-no="<%=book.getBookNo() %>"><%=book.getFirstName() + book.getLastName()  %></a>
+								</td>
+								<td><%=contact != null ? contact.getTel() : "" %></td>
+								<td><%=email != null ? email.getAddr() : "" %></td> 
 								<td><%=StringUtils.nullToBlank(book.getCompany()) %></td>
 								<td><%=StringUtils.nullToBlank(book.getDept()) %></td>
 								<td><%=StringUtils.nullToBlank(book.getPosition()) %></td>
@@ -403,6 +407,161 @@
 		</div>
 	</form>
 	</div>
+</div>
+<!-- 연락처 상세, 수정 모달 -->
+<div class="modal" tabindex="-1" id="modal-detail-address">
+   <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+         <div class="modal-header">
+            <h5 class="modal-title">연락처 상세 정보</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <div class="modal-body">
+            <p>연락처 정보를 확인하세요</p>
+            <form id="updateForm" class="border p-3 bg-light" method="post" action="updateAddress.jsp">
+               <!-- 주소록번호를 전달 -->
+               <input type="hidden" name="addressBookNo" value="" />
+               <div class="row mb-3">
+                  <label class="col-sm-2 col-form-label">이름</label>
+                  <div class="col-sm-3">
+                     <input type="text" class="form-control form-control-sm" name="firstName" value="홍">
+                  </div>
+                  <div class="col-sm-3">
+                     <input type="text" class="form-control form-control-sm" name="lastName" value="길동">
+                  </div>
+               </div>
+               <div id="box-contact" class="mb-3">
+                  <!-- 연락처가 추가되는 곳 -->
+                  <div class="row mb-1">
+                     <label class="col-sm-2 col-form-label">전화번호 <input type="radio" name="" value="Y" checked class="float-end mt-1"></label>
+                     <div class="col-sm-2">
+                        <select class="form-select form-select-sm" name="contactType">
+                           <option value="휴대폰"> 휴대폰</option>
+                           <option value="회사" selected> 회사</option>
+                           <option value="집"> 집</option>
+                           <option value="기타"> 기타</option>
+                        </select>
+                     </div>
+                     <div class="col-sm-6">
+                        <input type="text" class="form-control form-control-sm" name="contactTel" value="020-1234-5678">
+                     </div>
+                     <div class="col-sm-2 d-flex justify-content-end">
+                        <button type="button" class="btn btn-sm"><i class="bi bi-plus-circle"></i></button>
+                        <button type="button" class="btn btn-sm"><i class="bi bi-dash-circle"></i></button>
+                     </div>
+                  </div>
+                  <div class="row mb-1">
+                     <label class="col-sm-2 col-form-label">전화번호 <input type="radio" name="" value="N" class="float-end mt-1"></label>
+                     <div class="col-sm-2">
+                        <select class="form-select form-select-sm" name="contactType">
+                           <option value="휴대폰"> 휴대폰</option>
+                           <option value="회사" selected> 회사</option>
+                           <option value="집"> 집</option>
+                           <option value="기타"> 기타</option>
+                        </select>
+                     </div>
+                     <div class="col-sm-6">
+                        <input type="text" class="form-control form-control-sm" name="contactTel" value="020-1234-5678">
+                     </div>
+                     <div class="col-sm-2 d-flex justify-content-end">
+                        <button type="button" class="btn btn-sm"><i class="bi bi-plus-circle"></i></button>
+                        <button type="button" class="btn btn-sm"><i class="bi bi-dash-circle"></i></button>
+                     </div>
+                  </div>
+               </div>
+               <div id="box-email" class="mb-3">
+                  <!-- 이메일이 추가되는 곳 -->
+                  <div class="row mb-1">
+                     <label class="col-sm-2 col-form-label">이메일 <input type="radio" name="" value="Y" checked class="float-end mt-1"></label>
+                     <div class="col-sm-8">
+                        <input type="text" class="form-control form-control-sm" name="emailAddr" value="hong@gmail.com">
+                     </div>
+                     <div class="col-sm-2 d-flex justify-content-end">
+                        <button type="button" class="btn btn-sm"><i class="bi bi-plus-circle"></i></button>
+                        <button type="button" class="btn btn-sm"><i class="bi bi-dash-circle"></i></button>
+                     </div>
+                  </div>
+                  <div class="row mb-1">
+                     <label class="col-sm-2 col-form-label">이메일 <input type="radio" name="" value="N" class="float-end mt-1"></label>
+                     <div class="col-sm-8">
+                        <input type="text" class="form-control form-control-sm" name="emailAddr" value="hong@gmail.com">
+                     </div>
+                     <div class="col-sm-2 d-flex justify-content-end">
+                        <button type="button" class="btn btn-sm"><i class="bi bi-plus-circle"></i></button>
+                        <button type="button" class="btn btn-sm"><i class="bi bi-dash-circle"></i></button>
+                     </div>
+                  </div>
+               </div>
+               <div class="row mb-3">
+                  <label class="col-sm-2 col-form-label">그룹</label>
+                  <div class="col-sm-5">
+                     <select class="form-select form-select-sm" name="groupNo">
+                        <option value="100"> 친구</option>
+                        <option value="102"> 회사</option>
+                        <option value="103" selected> 가족</option>
+                        <option value="104"> 모인</option>
+                     </select>
+                  </div>
+               </div>
+               <div class="row mb-3">
+                  <label class="col-sm-2 col-form-label">회사</label>
+                  <div class="col-sm-4">
+                     <input type="text" class="form-control form-control-sm" name="company" value="한국주식회사" placeholder="회사명">
+                  </div>
+                  <div class="col-sm-3">
+                     <input type="text" class="form-control form-control-sm" name="dept" value="개발1팀" pattern="부서명">
+                  </div>
+                  <div class="col-sm-3">
+                     <input type="text" class="form-control form-control-sm" name="position" value="사원" placeholder="직위">
+                  </div>
+               </div>
+               <div id="box-address" class="mb-3">
+                  <!-- 주소가 추가되는 곳 -->
+                  <div class="row mb-1">
+                     <label class="col-sm-2 col-form-label">주소 <input type="radio" name="" value="Y" checked class="float-end mt-1"></label>
+                     <div class="col-sm-3">
+                        <select class="form-select form-select-sm" name="addressType">
+                           <option value="회사" selected> 회사</option>
+                           <option value="집"> 집</option>
+                           <option value="기타"> 기타</option>
+                        </select>
+                     </div>
+                     <div class="col-sm-3">
+                        <input type="text" class="form-control form-control-sm" name="zipcode" value="1234" placeholder="우편번호">
+                     </div>
+                     <div class="col-sm-2">
+                        <button type="button" class="btn btn-outline-secondary btn-xs">우편번호 검색</button>
+                     </div>
+                     <div class="col-sm-2 d-flex justify-content-end">
+                        <button type="button" class="btn btn-sm"><i class="bi bi-plus-circle"></i></button>
+                        <button type="button" class="btn btn-sm"><i class="bi bi-dash-circle"></i></button>
+                     </div>
+                  </div>
+                  <div class="row mb-1">
+                     <div class="col-sm-10 offset-sm-2">
+                        <input type="text" class="form-control form-control-sm" name="basic" value="서울특별시 종로구" placeholder="기본주소">
+                     </div>
+                  </div>
+                  <div class="row mb-1">
+                     <div class="col-sm-10  offset-sm-2">
+                        <input type="text" class="form-control form-control-sm" name="detail" value="502호" placeholder="기본주소">
+                     </div>
+                  </div>
+               </div>
+               <div class="row mb-1">
+                  <label class="col-sm-2 col-form-label">메모</label>
+                  <div class="col-sm-10">
+                     <textarea class="form-control" rows="3" name="memo" placeholder="메모">메모입니다.</textarea>
+                  </div>
+               </div>
+            </form>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">확인</button>
+            <button type="button" id="updateBtn" class="btn btn-dark btn-sm">수정</button>
+         </div>
+      </div>
+   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
@@ -626,7 +785,7 @@ $(function(){
 	})
 	
 })
-<script type="text/javascript">
+
 $(function() {
 	$("#btn-move-addr").click(function () {
 		var groupNo = $("#select-groups").val()
@@ -644,26 +803,58 @@ $(function() {
 		$("#form-book").trigger("submit");
 	});
 });
-
-// 삭제버튼 클릭시 발생하는 이벤트
+ 
+ /* 주소록 상세보기, 수정 폼 */
+$(function() {
+	   let addressDetailModal = new bootstrap.Modal("#modal-detail-address");
+	   
+	   $("#table-address-list tbody a").click(function(event) {
+	      event.preventDefault();
+	      // 클릭한 주소록의 주소록번호를 저장 
+	      var addressBookNo = $(this).attr("data-address-book-no");
+		  $("#updateBtn").click(function() {
+			  $("#updateForm input[name='addressBookNo']").val(addressBookNo);
+			  $("#updateForm").submit();
+		  });      
+	    	  
+	      addressDetailModal.show();
+	   })
+});
+ 
+	// 삭제버튼 클릭시 발생하는 이벤트
 	$("#deleteBtn").click(function() {
 		var addressBookNo = [];
 		
+		if ($("input[name=bookNo]:checked").length == 0) {
+			alert("삭제할 주소록을 선택하세요");
+			return false;
+		};
+		
 		// 선택한 주소록을 각각 배열에 담는다. 
-		$("input[name=addressBookNo]:checked").each(function(){
+		$("input[name=bookNo]:checked").each(function(){
 			 addressBookNo.push($(this).val());
 		});
-		
 		// 삭제할 주소록을 deleteAddress.jsp에 보낸다.
 		location.href = "deleteAddress.jsp?addressBookNo="+addressBookNo;
 	});
 	
-	// 페이지 번호 클릭했을때 발생하는 이벤트
-	function changePage(event,page) {
-		event.preventDefault();
+	// 완전삭제 버튼 클릭시 발생하는 이벤트
+	$("#compleetDeleteBtn").click(function() {
+		var addressBookNo = [];
 		
-		submitForm(page);
-	}
+		if (addressBookNo == "") {
+			alert("완전삭제할 주소록을 선택하세요");
+			return false;
+		};
+		
+		// 선택한 주소록을 각각 배열에 담는다. 
+		$("input[name=bookNo]:checked").each(function(){
+			 addressBookNo.push($(this).val());
+		});
+		
+		// 삭제할 주소록을 deleteAddress.jsp에 보낸다.
+		location.href = "completeDeleteAddress.jsp?addressBookNo="+addressBookNo;
+	})
 	
 	// form 태그 전송
 	function submitForm(page) {
@@ -674,25 +865,26 @@ $(function() {
 
 	// 휴지통 클릭했을 때 이벤트
 	$("#wastebasket").click(function(){
-		var employeeNo = $(this).attr("data-employee-no");
+		$("#deleteBtn").addClass("d-none");
+		$("#compleetDeleteBtn").removeClass("d-none");
 		
 		wastbasketList();
 	});
 
-	
 	// ajax사용해서 삭제한 주소록 목록 조회하는 함수
 	function wastbasketList() {
 		
-		$.getJSON("wastebasket.jsp", {empNo:<%=empNo %>}, function(address){
+		$.getJSON("wastebasket.jsp", {empNo:<%=empNo %>}, function(result){
 			// 주소록 갯수를 조회해서 내 주소록의 갯수를 변경한다.
-			var count = address.length;
+			var addressList = result.addressList;
+			var count = addressList.length;
 			$("#addressCount").text(count);
 			
 			var html = "";
 			var nav = "";
 
 			// 삭제한 주소록이 없을때
-			if (address.length < 1) {
+			if (addressList.length < 1) {
 				html += '<tr>';
 				html += '<td colspan="8" class="text-center">휴지통이 비어있습니다.</td>'
 				html += '</tr>';
@@ -706,15 +898,15 @@ $(function() {
 			}
 			
 			// 삭제한 주소록 목록
-			for (var i = 0; i < address.length; i++) {
-				var addr = address[i];
+			for (var i = 0; i < addressList.length; i++) {
+				var addr = addressList[i];
 				
 				html += '<tr>';
-				html += 	'<td class="text-center"><input type="checkbox" name="" value=""/></td>'
+				html += 	'<td class="text-center"><input type="checkbox" name="bookNo" value="'+ addr.bookNo +'"/></td>'
 				html += 	'<td><i class="bi bi-star-fill text-success text-border"></i></td>'
 				html += 	'<td>'+ addr.lastName+addr.firstName +'</td>'
 				html += 	'<td>'+ addr.tel +'</td>'
-				html += 	'<td>'+ addr.email +'</td>'
+				html += 	'<td>'+ addr.addr +'</td>'
 				html += 	'<td>'+ addr.company +'</td>'
 				html += 	'<td>'+ addr.dept +'</td>'
 				html += 	'<td>'+ addr.position +'</td>'
@@ -724,37 +916,85 @@ $(function() {
 			}
 			
 			// 페이징 처리
-			var nav = `
-			<%
-			
-			if (totalRows >= 1) {
-				
-			%>
+			var paging = result.paging;
+		 	var nav = `
 					<ul class="pagination pagination-sm justify-content-center">	
 						<li class="page-item">
-							<a class="page-link <%=pagination.isFirst()? "disabled" : "" %>" href="wastebasketList.jsp?page=<%=pagination.getPrevPage() %>">이전</a>
-						</li>
-				<%
-					for (int number = pagination.getBeginPage(); number <= pagination.getEndPage(); number++) {
-				%>
-						<li class="page-item">
-							<a class="page-link <%=currentPage == number? "active" : "" %>" href="wastebasketList.jsp?page=<%=number %>" onclick="changePage(event, <%=number %>);"><%=number %></a>
-						</li>
-				<%
+							<a class="page-link \${result.isFirst ? 'disabled' : ''}" href="home.jsp?page=\${result.prevPage}">이전</a>
+						</li>`
+			
+					for (let number = result.beginPage; number <= result.endPage; number++) {
+						
+						nav += `<li class="page-item">
+							       <a class="page-link \${result.currentPage == number ? 'active' : ''}" href="home.jsp?page=\${number}" data-page-no="\${number}">\${number}</a>
+								</li>`
 					}
-				%>	
-						<li class="page-item">
-							<a class="page-link <%=pagination.isLast()? "disabled" : "" %>" href="wastebasketList.jsp?page=<%=pagination.getNextPage() %>">다음</a>
+				
+				nav += `<li class="page-item">
+							<a class="page-link \${paging.isLast ? 'disabled' : ''}" href="home.jsp?page=\${result.nextPage}">다음</a>
 						</li>
 					</ul>
-			<%
-				} 
-			%>			
+					
 			`;
 			
-			$("#nav").html(nav);
+			$("#nav").html(nav); 
 		});
-	}
+	};
+	/* $("#nav .pagination").on('click', '.page-link', function(event){
+		event.preventdefault();
+		
+		var pageNo = $(this).attr("data-page-no");
+		console.log(pageNo);
+	}); */
+	
+	$("#nav .pagination .page-link").click(function(event){
+		event.preventDefault();
+		
+		var page = $(this).attr("data-page-no");
+		console.log(page);
+		
+		$.getJSON("wastebasket.jsp", {empNo:<%=empNo %>, pageNo:page}, function(result){
+			// 주소록 갯수를 조회해서 내 주소록의 갯수를 변경한다.
+			var addressList = result.addressList;
+			var count = addressList.length;
+			$("#addressCount").text(count);
+			
+			var html = "";
+			var nav = "";
+
+			// 삭제한 주소록이 없을때
+			if (addressList.length < 1) {
+				html += '<tr>';
+				html += '<td colspan="8" class="text-center">휴지통이 비어있습니다.</td>'
+				html += '</tr>';
+				
+				$("#book-table tbody").html(html);
+				
+				nav += "<ul style='display:none;'></ul>";
+				$("#nav").html(nav);
+				
+				return;
+			}
+			
+			// 삭제한 주소록 목록
+			for (var i = 0; i < addressList.length; i++) {
+				var addr = addressList[i];
+				
+				html += '<tr>';
+				html += 	'<td class="text-center"><input type="checkbox" name="bookNo" value="'+ addr.bookNo +'"/></td>'
+				html += 	'<td><i class="bi bi-star-fill text-success text-border"></i></td>'
+				html += 	'<td>'+ addr.lastName+addr.firstName +'</td>'
+				html += 	'<td>'+ addr.tel +'</td>'
+				html += 	'<td>'+ addr.addr +'</td>'
+				html += 	'<td>'+ addr.company +'</td>'
+				html += 	'<td>'+ addr.dept +'</td>'
+				html += 	'<td>'+ addr.position +'</td>'
+				html += '</tr>';
+				
+				$("#book-table tbody").html(html);
+			}
+		});
+	}); 
 </script>
 </body>
 </html>
