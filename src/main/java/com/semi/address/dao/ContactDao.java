@@ -25,5 +25,17 @@ public class ContactDao {
 	public void insertContact(Contact contact) {
 		SqlMapper.insert("contacts.insertContact", contact);
 	}
+
+	public Contact getContactByAddressBookNo(int bookNo) {
+		return (Contact) SqlMapper.selectOne("contacts.getContactsByBookNo", bookNo);
+	}
+	
+	public void updateAddressContact(Contact contact) {
+		SqlMapper.update("contacts.updateAddressContact", contact);
+	}
+	
+	public void deleteContactByBookNo(int bookNo) {
+		SqlMapper.delete("contacts.deleteContactByBookNo", bookNo);
+	}
 	
 }
