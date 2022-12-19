@@ -17,7 +17,7 @@ public class Book {
 	private Date createdDate; 
 	private Date updatedDate; 
 	private Date deletedDate;
-	private Integer employeeNo;
+	private Integer empNo;
 	
 	public Book() {}
 	
@@ -105,10 +105,10 @@ public class Book {
 	public void setDeletedDate(Date deletedDate) {
 		this.deletedDate = deletedDate;
 	}
-	public Integer getEmployeeNo() {
-		return employeeNo;
+	public Integer getEmpNo() {
+		return empNo;
 	}
-	public void setEmployeeNo(Integer employeeNo) {
-		this.employeeNo = employeeNo;
+	public void setEmpNo(Integer empNo) {
+		this.empNo = empNo;
 	} 
 }

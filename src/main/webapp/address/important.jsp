@@ -1,3 +1,4 @@
+<%@page import="com.semi.admin.vo.Employee"%>
 <%@page import="com.semi.address.dto.AddressDto"%>
 <%@page import="com.semi.address.dao.AddressBookDao"%>
 
@@ -17,6 +18,8 @@
 <%@page import="com.semi.address.dao.AddressGroupDao"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ include file="../logincheck.jsp" %>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -38,10 +41,10 @@
 	<jsp:param name="menu" value="address"/>
 </jsp:include>
 <%
-	int empNo = 1002;
-	// 유저아이디 (로그인한 유저의 주소록)
-	// String loginUserId = (String) session.getAttribute("login_user_id"); 
 	
+	// 로그인한 회원
+	int empNo = loginEmployee.getNo();
+
 	// 현재 페이지 
 	int currentPage = StringUtils.stringToInt(request.getParameter("page"), 1);
 	String opt = StringUtils.nullToBlank(request.getParameter("opt"));
@@ -49,13 +52,13 @@
 
 	// 전체 페이지 (이름 기준)
 	BookDao bookDao = BookDao.getInstance();
-	int totalRows = bookDao.getTotalRows(); 
+	int totalImportantRows = bookDao.getTotalImportantRows(empNo); 
 	
 	ContactDao contactDao = ContactDao.getInstance();
 	EmailDao emailDao = EmailDao.getInstance();
 	
 	// 10행 5페이지씩
-	Pagination pagination = new Pagination(currentPage, totalRows);
+	Pagination pagination = new Pagination(currentPage, totalImportantRows);
 	
 	Map<String, Object> param = new HashMap<>(); 
 	if (!opt.isEmpty()){
@@ -64,15 +67,15 @@
 	if (!keyword.isEmpty()){
 		param.put("keyword", keyword);
 	} 
-	param.put("empNo", empNo);
+	param.put("empNo", loginEmployee.getNo());
 	
 	param.put("begin", pagination.getBegin()); 
 	param.put("end", pagination.getEnd()); 
 	
-	List<Book> bookList = bookDao.getBooks(param); 
+	List<Book> bookList = bookDao.getImportantBooks(param); 
 	
 	AddressGroupDao addGroupDao = new AddressGroupDao();
-	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(empNo);
+	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(loginEmployee.getNo());
 %>
 <div class="container-fluid my-3">
 	<div class="row">
@@ -85,16 +88,18 @@
 					</div>
 				</div>
 				<div class="col-12 d-flex justify-content-around">
-					<button class="btn">
-						<i class="bi bi-clock-fill text-success"></i><br/>
-						<small>최근등록</small>
-					</button>
-					<button class="btn">
-						<a href="important.jsp" class="text-decoration-none text-dark" >
-						<i class="bi bi-star-fill text-success"></i><br/>
-						<small>중요</small>
-						</a>
-					</button>
+					<a href="recentAdd.jsp" class="text-decoration-none text-dark" >
+						<button class="btn">
+							<i class="bi bi-clock-fill text-success"></i><br/>
+							<small>최근등록</small>
+						</button>
+					</a>
+					<a href="important.jsp" class="text-decoration-none text-dark" >
+						<button class="btn">
+							<i class="bi bi-star-fill text-success"></i><br/>
+							<small>중요</small>
+						</button>
+					</a>
 				</div>
 			</div>
 			<div class="row mb-3">
@@ -119,7 +124,7 @@
 		%>
 									</ul>
 								</li>
-				  				<li id="wastebasket" data-employee-no="<%=empNo %>"><span><i class="bi bi-trash me-2"></i>휴지통</span></li>
+				  				<li id="wastebasket" data-employee-no="<%=loginEmployee.getNo() %>"><span><i class="bi bi-trash me-2"></i>휴지통</span></li>
 				  				<li><span><i class="bi bi-question-square-fill me-2"></i>이름없는 연락처</span></li>
 							</ul>
 						</div>
@@ -141,7 +146,7 @@
 							<button type="button" onclick="submitForm(1);" class="btn btn-sm btn-outline-secondary">검색</button>
 						</div>
 						<small>
-							<strong>내 주소록</strong> | <strong class="text-success"><%=totalRows %></strong>
+							<strong>중요 주소록</strong> | <strong class="text-success"><%=totalImportantRows %></strong>
 						</small>
 					</form>
 				</div>
@@ -206,7 +211,7 @@
 			// book의 각 주소록번호에 해당하는 contact, email 리스트 얻기
 			int bookNo = book.getBookNo();
 			
-			// 기본주소록만 목록에 표시
+			// 기본 전화번호,이메일만 목록에 표시
 			Contact contact = contactDao.getDefaultContactByBookNo(bookNo);
 			Email email = emailDao.getDefaultEmailByBookNo(bookNo); 
 %>
@@ -233,7 +238,7 @@
 						</tbody>
 					</table>
 <%
-	if(totalRows >= 1){ 
+	if(totalImportantRows >= 1){ 
 %>
 
 					<nav id="nav">
@@ -1098,7 +1103,7 @@ $(function(){
 	// ajax사용해서 삭제한 주소록 목록 조회하는 함수
 	function wastbasketList() {
 		
-		$.getJSON("wastebasket.jsp", {empNo:<%=empNo %>}, function(address){
+		$.getJSON("wastebasket.jsp", {empNo:<%=loginEmployee.getNo() %>}, function(address){
 			// 주소록 갯수를 조회해서 내 주소록의 갯수를 변경한다.
 			var count = address.length;
 			$("#addressCount").text(count);
@@ -1142,7 +1147,7 @@ $(function(){
 			var nav = `
 			<%
 			
-			if (totalRows >= 1) {
+			if (totalImportantRows >= 1) {
 				
 			%>
 					<ul class="pagination pagination-sm justify-content-center">	
