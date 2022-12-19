@@ -15,6 +15,10 @@ public class EmployeeDao {
 		return instance;
 	}
 	
+	public int getTotalRows(Map<String, Object> param) {
+		return (Integer) SqlMapper.selectOne("employees.getTotalRows", param);
+	}
+	
 	public void insertEmployee(Employee employee) {
 		SqlMapper.insert("employees.insertEmployee", employee);
 	}
@@ -40,10 +44,6 @@ public class EmployeeDao {
 	@SuppressWarnings("unchecked")
 	public List<Employee> getAllEmployees() {
 		return (List<Employee>) SqlMapper.selectList("employees.getAllEmployees");
-	}
-	
-	public int getTotalRows() {
-		return (Integer) SqlMapper.selectOne("employees.getTotalRows");
 	}
 	
 	public void updateEmployee(Employee employee) {
