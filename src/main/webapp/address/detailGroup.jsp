@@ -4,6 +4,8 @@
 <%@page import="com.semi.address.dao.AddressGroupDao"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ include file="../logincheck.jsp" %>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -20,14 +22,13 @@
 </jsp:include>
 <div class="container-fluid my-3">
 <%
-	int empNo = 1000;
 
 	int groupNo = StringUtils.stringToInt(request.getParameter("groupNo"));
 	// System.out.println("그룹번호: " + groupNo);
 
 	AddressGroupDao addGroupDao = new AddressGroupDao();
 	// 사원번호로 주소록그룹 리스트 조회
-	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(empNo);
+	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(loginEmployee.getNo());
 	
 %>
 	<div class="row">

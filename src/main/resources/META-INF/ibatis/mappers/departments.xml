@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="departments">
+	
+	<insert id="insertDepartment" parameterClass="com.semi.admin.vo.Department">
+		insert into semi_departments
+			(department_no, department_name)
+		values
+			(semi_departments_seq.nextval, #name#)
+	</insert>
+	
+	<select id="getDepartmentByNo" parameterClass="int" resultClass="com.semi.admin.vo.Department">
+		select
+			department_no as no,
+			department_name as name
+		from
+			semi_departments
+		where
+			department_no = #value#
+	</select>
+	
+	<select id="getAllDepartments" resultClass="com.semi.admin.vo.Department">
+		select
+			department_no as no,
+			department_name as name
+		from
+			semi_departments
+	</select>
+	
+</sqlMap>
+

@@ -1,3 +1,4 @@
+<%@page import="com.semi.admin.vo.Employee"%>
 <%@page import="com.semi.address.dto.AddressDto"%>
 <%@page import="com.semi.address.dao.AddressBookDao"%>
 
@@ -17,6 +18,8 @@
 <%@page import="com.semi.address.dao.AddressGroupDao"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ include file="../logincheck.jsp" %>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -38,9 +41,8 @@
 	<jsp:param name="menu" value="address"/>
 </jsp:include>
 <%
-	int empNo = 1002;
+	
 	// 유저아이디 (로그인한 유저의 주소록)
-	// String loginUserId = (String) session.getAttribute("login_user_id"); 
 	
 	// 현재 페이지 
 	int currentPage = StringUtils.stringToInt(request.getParameter("page"), 1);
@@ -64,7 +66,7 @@
 	if (!keyword.isEmpty()){
 		param.put("keyword", keyword);
 	} 
-	param.put("empNo", empNo);
+	param.put("empNo", loginEmployee.getNo());
 	
 	param.put("begin", pagination.getBegin()); 
 	param.put("end", pagination.getEnd()); 
@@ -72,7 +74,7 @@
 	List<Book> bookList = bookDao.getBooks(param); 
 	
 	AddressGroupDao addGroupDao = new AddressGroupDao();
-	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(empNo);
+	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(loginEmployee.getNo());
 %>
 <div class="container-fluid my-3">
 	<div class="row">
@@ -117,7 +119,7 @@
 		%>
 									</ul>
 								</li>
-				  				<li id="wastebasket" data-employee-no="<%=empNo %>"><span><i class="bi bi-trash me-2"></i>휴지통</span></li>
+				  				<li id="wastebasket" data-employee-no="<%=loginEmployee.getNo() %>"><span><i class="bi bi-trash me-2"></i>휴지통</span></li>
 				  				<li><span><i class="bi bi-question-square-fill me-2"></i>이름없는 연락처</span></li>
 							</ul>
 						</div>
@@ -267,7 +269,7 @@
 </div>
 <div class="modal" tabindex="-1" id="modal-form-address-group">
 	<div class="modal-dialog modal-sm">
-		<form method="post" action="registerGroupH.jsp">
+		<form id="from-register-addrGroup" method="post" action="registerGroupH.jsp">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title">연락처 그룹 추가</h5>
@@ -626,8 +628,8 @@ $(function(){
 	})
 	
 })
-<script type="text/javascript">
-$(function() {
+
+// 그룹 이동
 	$("#btn-move-addr").click(function () {
 		var groupNo = $("#select-groups").val()
 		if (groupNo == "") {
@@ -643,7 +645,18 @@ $(function() {
 		
 		$("#form-book").trigger("submit");
 	});
-});
+
+//그룹 등록
+	$("#from-register-addrGroup").submit(function() {
+		let name = $(":input[name=name]").val();
+		
+		if (name === "") {
+			alert("그룹명은 필수입력 값입니다.");
+			return false;
+		}
+		
+		return true;
+	})
 
 // 삭제버튼 클릭시 발생하는 이벤트
 	$("#deleteBtn").click(function() {
@@ -683,7 +696,7 @@ $(function() {
 	// ajax사용해서 삭제한 주소록 목록 조회하는 함수
 	function wastbasketList() {
 		
-		$.getJSON("wastebasket.jsp", {empNo:<%=empNo %>}, function(address){
+		$.getJSON("wastebasket.jsp", {empNo:<%=loginEmployee.getNo() %>}, function(address){
 			// 주소록 갯수를 조회해서 내 주소록의 갯수를 변경한다.
 			var count = address.length;
 			$("#addressCount").text(count);
