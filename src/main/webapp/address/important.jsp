@@ -1,7 +1,5 @@
 <%@page import="com.semi.admin.vo.Employee"%>
 <%@page import="com.semi.address.dto.AddressDto"%>
-<%@page import="com.semi.address.dao.AddressBookDao"%>
-
 <%@page import="com.semi.address.vo.Contact"%>
 <%@page import="com.semi.address.vo.Email"%>
 <%@page import="com.semi.address.dao.EmailDao"%>
@@ -220,7 +218,7 @@
 								<td><input type="checkbox" name="bookNo" value="<%=bookNo %>"/></td>
 								<td><i class="bi <%=book.getImportant().equals("Y") ? "bi-star-fill" : "bi-star" %> text-success" data-important="<%=book.getImportant()%>" data-book-no="<%=bookNo %>"></i></td>
 								<td>
-									<a href="" class="text-decoration-none" data-address-book-no="<%=bookNo %>">
+									<a href="" class="text-decoration-none text-dark" data-address-book-no="<%=bookNo %>">
 										<%=book.getFirstName()%><%=book.getLastName() %>
 									</a>
 								</td>

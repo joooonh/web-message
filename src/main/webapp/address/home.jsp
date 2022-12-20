@@ -140,10 +140,10 @@
 						<input type="hidden" name="page" value="<%=currentPage %>">
 					
 						<div class="col-12">
-							<input type="text" class="form-control form-control-sm" name="keyword" placeholder="연락처 검색"/>
+							<input type="text" class="form-control form-control-sm" name="keyword" value="<%=keyword %>" placeholder="연락처 검색"/>
 						</div>
 						<div class="col-12">
-							<button type="button" onclick="submitForm(1);" class="btn btn-sm btn-outline-secondary">검색</button>
+							<button type="button" class="btn btn-sm btn-outline-secondary" id="btn-search-keyword">검색</button>
 						</div>
 						<small>
 							<strong>내 주소록</strong> | <strong class="text-success"><%=totalRows %></strong>
@@ -220,7 +220,7 @@
 								<td><input type="checkbox" name="bookNo" value="<%=bookNo %>"/></td>
 								<td><i class="bi <%=book.getImportant().equals("Y") ? "bi-star-fill" : "bi-star" %> text-success" data-important="<%=book.getImportant()%>" data-book-no="<%=bookNo %>"></i></td>
 								<td>
-									<a href="" class="text-decoration-none" data-address-book-no="<%=bookNo %>">
+									<a href="" class="text-decoration-none text-dark" data-address-book-no="<%=bookNo %>">
 										<%=book.getFirstName()%><%=book.getLastName() %>
 									</a>
 								</td>
@@ -679,10 +679,7 @@ $(function(){
 			})
 		}
 		
-		//important = (important == "Y" ? "N" : "Y");
-		//location.href= "important.jsp?bookNo=" + bookNo + "&important=" + important;
 	})
-	
 	
 	// 전체 체크박스 클릭시 모든 체크박스 체크 표시 
 	$("#checkbox-all").change(function(){
@@ -706,17 +703,6 @@ $(function(){
 		var checkedCheckboxLength = $(":checkbox[name=bookNo]:checked").length;
 		
 		$("#checkbox-all").prop("checked", checkboxLength == checkedCheckboxLength);
-	}
-	
-	// 체크된 체크박스가 없을 때 삭제버튼 비활성화 
-	function toggleDelete(){
-		var checkedCheckboxLength = $(":checkbox[name=bookNo]:checked").length;
-		
-		if(checkedCheckboxLength == 0){
-			$("#deleteBook").addClass("disabled");
-		} else {
-			$("#deleteBook").removeClass("disabled");
-		}
 	}
 	
 	// 연락처추가 모달폼 유효성 체크
@@ -1047,7 +1033,13 @@ $(function(){
 		let index = $(this).closest(".row").index();
 		$(":hidden[name=address-index]").val(index); 
 	})
-
+	
+	// 검색버튼 클릭했을 때 실행되는 이벤트 핸들러 함수
+	$("#btn-search-keyword").click(function() {
+		$(":input[name=page]").val(1);
+		$("#deliverForm").trigger("submit")
+	})
+	
 // 그룹 이동
 	$("#btn-move-addr").click(function () {
 		var groupNo = $("#select-groups").val()

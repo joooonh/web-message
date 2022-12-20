@@ -1,6 +1,7 @@
 package com.semi.address.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.semi.address.vo.Contact;
 import com.semi.util.SqlMapper;
