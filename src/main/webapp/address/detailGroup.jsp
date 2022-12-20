@@ -118,7 +118,8 @@
 							<ul class="tree" style="cursor:pointer;">
 				  				<li>
 				  					<span>
-				  						<a href="home.jsp" class="text-decoration-none text-dark"><i class="bi bi-person-lines-fill me-2"></i>전체 연락처</a>
+				  						<i class="bi bi-person-lines-fill me-2"></i>
+				  						<a href="home.jsp" class="text-decoration-none text-dark"><mark>전체 연락처</mark></a>
 				  						<a href="control.jsp" class="text-decoration-none text-dark float-end"><i class="bi bi-gear-fill"></i></a>
 				  					</span>
 				    				<ul class="nested active">
