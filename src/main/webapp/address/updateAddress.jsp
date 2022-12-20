@@ -23,21 +23,22 @@
 	
 	// 전화번호
 	String[] contactTypeList = request.getParameterValues("contactType");	
-	String[] telList = request.getParameterValues("contactTel");
-	//String[] contactDefaultYN = request.getParameterValues("contactDefaultYN");
+	String[] telList = request.getParameterValues("tel");
+	int contactIndex = StringUtils.stringToInt(request.getParameter("contact-index"));
 	
 	// 이메일																																																								gtff
 	String[] emailList = request.getParameterValues("emailAddr");
-	//String emailDefaultYN = request.getParameter("emailDefaultYN");
+	int emailIndex = StringUtils.stringToInt(request.getParameter("email-index"));
 	
 	// 주소 
 	String[] addrTypeList = request.getParameterValues("addressType");
 	String[] zipcodeList = request.getParameterValues("zipcode");
 	String[] basicList = request.getParameterValues("basic");
 	String[] detailList = request.getParameterValues("detail");
+	int addressIndex = StringUtils.stringToInt(request.getParameter("address-index"));
 
-	AddressBookDao addressBookDao = new AddressBookDao();
 	// AddressBook객체 생성해서 전달받은 값을 저장
+	AddressBookDao addressBookDao = AddressBookDao.getInstance();
 	AddressBook addressBook = addressBookDao.getAddressBookByBookNo(addressBookNo);
 	
 	addressBook.setFirstName(firstName);
@@ -50,42 +51,52 @@
 	
 	addressBookDao.updateAddressBook(addressBook);
 	
-	ContactDao contactDao = ContactDao.getInstance();
-	contactDao.deleteContactByBookNo(addressBookNo);
 	// Contact 객체 생성해서 전달받은 값을 저장
-	for (int i = 0; i < telList.length; i++) {
+	ContactDao contactDao = ContactDao.getInstance();
+	// 연락처를 3 -> 2 개로 수정 할 수도 있으니까 아예 주소록번호에 해당하는 연락처를 지운 다음 업데이트한다.
+	contactDao.deleteContactByBookNo(addressBookNo);
+	for (int i = 0; i < contactTypeList.length; i++) {
 		Contact contact = new Contact();
 		
 		contact.setBookNo(addressBookNo);
 		contact.setType(contactTypeList[i]);
 		contact.setTel(telList[i]);
-		//contact.setDefaultYN(contactDefaultYN[i]);
-		
+		// 기본연락처 여부 확인 -> 파라미터값으로 받아온 contactIndex와 같은 값일때 기본연락처를 'Y'로 설정한다.
+		if(contactIndex == i){
+				contact.setDefaultYN("Y");
+			} else {
+				contact.setDefaultYN("N");
+			}
+
 		// 연락처를 지웠기 때문에 nullPointException발생(주소록 번호가 없음) -> insert한다.
 		contactDao.insertContact(contact);
 	}
 	
-	EmailDao emailDao = EmailDao.getInstance();
 	// Email 객체 생성해서 전달받은 값을 저장
+	EmailDao emailDao = EmailDao.getInstance();
+	// 이메일을 3 -> 2 개로 수정 할 수도 있으니까 아예 주소록번호에 해당하는 이메일을 지운 다음 업데이트한다.
 	emailDao.deleteByBookNo(addressBookNo);
 	
 	for (int i = 0; i < emailList.length; i++) {
 		Email email = new Email();
 		email.setBookNo(addressBookNo);
 		email.setAddr(emailList[i]);
-		//email.setDefaultYN(emailDefaultYN[i]);
+		// 기본이메일 여부 -> 파라미터값으로 받아온 emailIndex와 같은 값일때 기본연락처를 'Y'로 설정한다.
+		if(emailIndex == i){
+			email.setDefaultYN("Y");
+		} else {
+			email.setDefaultYN("N"); 
+		}
 		
 		emailDao.insertEmail(email);
 	}
 
-	AddressDao addressDao = AddressDao.getInstance();
-	addressDao.deleteAddressByBookNo(addressBookNo);
 	// Address 객체 생성해서 전달받은 값을 저장
+	AddressDao addressDao = AddressDao.getInstance();
+	// 주소를 3 -> 2 개로 수정 할 수도 있으니까 아예 주소록번호에 해당하는 주소를 지운 다음 업데이트한다.
+	addressDao.deleteAddressByBookNo(addressBookNo);
 	for (int i = 0; i < zipcodeList.length; i++) {
 		Address address = new Address();
-		
-		// 주소를 3 -> 2 개로 수정 할 수도 있으니까 아예 주소록번호에 해당하는 주소를 지운 다음 업데이트한다.
-		// 주소록번호에 해당하는 주소를 지운다.
 		
 		// 배열에 담긴 주소정보를 각각 저장
 		address.setBookNo(addressBookNo);
@@ -93,6 +104,12 @@
 		address.setZipcode(zipcodeList[i]);
 		address.setBasic(basicList[i]);
 		address.setDetail(detailList[i]);
+		// 기본주소 여부 -> 파라미터값으로 받아온 addressIndex와 같은 값일때 기본연락처를 'Y'로 설정한다. 
+		if(addressIndex == i){
+			address.setDefaultYN("Y");
+		} else {
+			address.setDefaultYN("N");
+		}
 		
 		addressDao.insertAddress(address);
 	}

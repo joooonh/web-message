@@ -18,6 +18,10 @@ pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 		response.sendRedirect("home.jsp?error=fail");
 		return;
 	}
+	if (employee.getDeleted().equals("Y")) {
+		response.sendRedirect("home.jsp?error=fail");
+		return;
+	}
 	
 	session.setAttribute("login_employee", employee);
 	

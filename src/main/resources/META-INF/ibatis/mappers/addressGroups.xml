@@ -28,6 +28,8 @@
 			semi_address_groups
 		where
 			emp_no = #value#
+		order by
+			group_seq asc
 	</select>
 	
 	<select id="getAddressGroups" parameterClass="map" resultClass="com.semi.address.vo.Group">
@@ -59,6 +61,8 @@
 				)
 		where
 			row_numbers between #begin# and #end#
+		order by
+			group_seq asc
 	</select>
 	
 	<select id="getAddressGroupByNo" parameterClass="int" resultClass="com.semi.address.vo.Group">
@@ -77,5 +81,26 @@
 		where
 			group_no = #value#
 	</select>
+	
+	<update id="updateAddressGroup" parameterClass="com.semi.address.vo.Group">
+		update
+			semi_address_groups
+		set
+			group_name = #name#,
+			group_address_count = #addressCount#,
+			group_seq = #seq#,
+			group_deleted = #deleted#,
+			group_updated_date = sysdate,
+			group_deleted_date = #deletedDate#
+		where
+			group_no = #no#
+	</update>
+	
+	<delete id="deleteAddrGroup" parameterClass="int">
+		delete from
+			semi_address_groups
+		where
+			group_no = #value#
+	</delete>
 </sqlMap>
 

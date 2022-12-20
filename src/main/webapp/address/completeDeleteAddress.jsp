@@ -8,7 +8,7 @@
 	String values1 = request.getParameter("addressBookNo");
 	String[] values = values1.split(",");
 
-	AddressBookDao addressBookDao = new AddressBookDao();
+	AddressBookDao addressBookDao = AddressBookDao.getInstance();
 	AddressDao addressDao = AddressDao.getInstance();
 	ContactDao contactDao = ContactDao.getInstance();
 	EmailDao emailDao = EmailDao.getInstance();

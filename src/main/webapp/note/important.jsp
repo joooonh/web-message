@@ -21,18 +21,25 @@
    //TODO session에서 로그인된 직원번호 조회
    //int empNo = 1006;
    int empNo = loginEmployee.getNo();
-
-   String[] memoNoArray = request.getParameterValues("memoNo");
- 
+  
+   int memoNo = Integer.parseInt(request.getParameter("memoNo"));
+   String important= request.getParameter("important");
+   
    MemoDao memoDao = new MemoDao();
-   for (String str : memoNoArray) {
-   		int memoNo = Integer.parseInt(str);
-	   memoDao.deleteMemoByNo(memoNo);
-	   
-   }
+  
+  Memo memo = memoDao.getMemoByNo(memoNo);
+  if ("Y".equals(important)) {
+	  memo.setImportant("N");
+  } else {
+	  memo.setImportant("Y");
+  }
+  memoDao.updateMemo(memo);
+	     
+
   
    response.sendRedirect("home.jsp");
 %>
+
    
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>

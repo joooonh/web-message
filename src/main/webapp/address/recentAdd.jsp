@@ -1,6 +1,5 @@
 <%@page import="com.semi.admin.vo.Employee"%>
 <%@page import="com.semi.address.dto.AddressDto"%>
-<%@page import="com.semi.address.dao.AddressBookDao"%>
 
 <%@page import="com.semi.address.vo.Contact"%>
 <%@page import="com.semi.address.vo.Email"%>
@@ -71,7 +70,7 @@
 	param.put("begin", pagination.getBegin()); 
 	param.put("end", pagination.getEnd()); 
 	
-	List<Book> bookList = bookDao.getBooks(param); 
+	List<Book> bookList = bookDao.getBooksOrderbyRecentDate(param); 
 	
 	AddressGroupDao addGroupDao = new AddressGroupDao();
 	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(loginEmployee.getNo());
@@ -108,7 +107,8 @@
 							<ul class="tree" style="cursor:pointer;">
 				  				<li>
 				  					<span>
-				  						<i class="bi bi-person-lines-fill me-2"></i><mark>전체 연락처</mark>
+				  						<i class="bi bi-person-lines-fill me-2"></i>
+				  						<a href="home.jsp" class="text-decoration-none text-dark"><mark>전체 연락처</mark></a>
 				  						<a href="control.jsp" class="text-decoration-none text-dark float-end"><i class="bi bi-gear-fill"></i></a>
 				  					</span>
 				    				<ul class="nested active">
@@ -219,7 +219,7 @@
 								<td><input type="checkbox" name="bookNo" value="<%=bookNo %>"/></td>
 								<td><i class="bi <%=book.getImportant().equals("Y") ? "bi-star-fill" : "bi-star" %> text-success" data-important="<%=book.getImportant()%>" data-book-no="<%=bookNo %>"></i></td>
 								<td>
-									<a href="" class="text-decoration-none" data-address-book-no="<%=bookNo %>">
+									<a href="" class="text-decoration-none text-dark" data-address-book-no="<%=bookNo %>">
 										<%=book.getFirstName()%><%=book.getLastName() %>
 									</a>
 								</td>

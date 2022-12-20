@@ -6,7 +6,7 @@
 	String values1 = request.getParameter("addressBookNo");
 	String[] values = values1.split(",");
 
-	AddressBookDao addressDao = new AddressBookDao();
+	AddressBookDao addressDao = AddressBookDao.getInstance();
 	
 	// 배열에 담긴 주소록번호를 삭제하는 수행문을 반복한다.
 	for (String value : values) {

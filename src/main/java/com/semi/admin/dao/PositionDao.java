@@ -17,4 +17,16 @@ public class PositionDao {
 	public List<Position> getAllPositions() {
 		return (List<Position>) SqlMapper.selectList("positions.getAllPositions");
 	}
+	
+	public void insertPosition(Position position) {
+		SqlMapper.insert("positions.insertPosition", position);
+	}
+	
+	public Position getPositionByNo(int positionNo) {
+		return (Position) SqlMapper.selectOne("positions.getPositionByNo", positionNo);
+	}
+	
+	public void updatePosition(Position position) {
+		SqlMapper.update("positions.updatePosition", position);
+	}
 }
