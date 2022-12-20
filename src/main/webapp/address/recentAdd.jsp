@@ -70,7 +70,7 @@
 	param.put("begin", pagination.getBegin()); 
 	param.put("end", pagination.getEnd()); 
 	
-	List<Book> bookList = bookDao.getBooks(param); 
+	List<Book> bookList = bookDao.getBooksOrderbyRecentDate(param); 
 	
 	AddressGroupDao addGroupDao = new AddressGroupDao();
 	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(loginEmployee.getNo());
@@ -107,7 +107,8 @@
 							<ul class="tree" style="cursor:pointer;">
 				  				<li>
 				  					<span>
-				  						<i class="bi bi-person-lines-fill me-2"></i><mark>전체 연락처</mark>
+				  						<i class="bi bi-person-lines-fill me-2"></i>
+				  						<a href="home.jsp" class="text-decoration-none text-dark"><mark>전체 연락처</mark></a>
 				  						<a href="control.jsp" class="text-decoration-none text-dark float-end"><i class="bi bi-gear-fill"></i></a>
 				  					</span>
 				    				<ul class="nested active">

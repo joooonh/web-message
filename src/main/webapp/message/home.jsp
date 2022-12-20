@@ -35,7 +35,6 @@
 	int empNo = 1000;	// logincheck.jsp로부터 가져와야 하는 값, employee.getNo();
 	int deptNo = 105;	// logincheck.jsp로부터 가져와야 하는 값, employee.getDeptNo();
 	String group = StringUtils.nullToValue(request.getParameter("group"), "receive");
-	String group = StringUtils.nullToBlank(request.getParameter("group"));
 	String keyword = StringUtils.nullToBlank(request.getParameter("keyword"));
 	int currentPage = StringUtils.stringToInt(request.getParameter("pageNo"), 1);
 	int rows = StringUtils.stringToInt(request.getParameter("rows"), 10);
@@ -46,7 +45,7 @@
 	param.put("keyword", keyword);
 	param.put("group", group);
 	
-	EmployeeDao employeeDao = new EmployeeDao();
+	EmployeeDao employeeDao = EmployeeDao.getInstance();
 	
 	MessageDao messageDao = MessageDao.getInstance();
 	int totalRows = messageDao.getTotalRows(param);

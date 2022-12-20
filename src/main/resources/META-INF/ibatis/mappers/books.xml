@@ -69,33 +69,34 @@
 				addr_updated_date	as updatedDate,
 				addr_deleted_date	as deletedDate,
 				emp_no				as empNo
-			from
-			  semi_address_books
-		  where
-        addr_deleted = 'N'
-          <dynamic>
-            <isNotNull property="keyword">
-              and (addr_first_name like '%' || #keyword# || '%'
-                   or addr_last_name like '%' || #keyword# || '%'
-                   or addr_company like '%' || #keyword# || '%'
-                   or addr_dept like '%' || #keyword# || '%'
-                   or addr_position like '%' || #keyword# || '%'
-                   or addr_book_no in (select addr_book_no 
-                                      from semi_address_contacts
-                                      <isNotNull property="keyword">
-                                        where contact_tel like '%' || #keyword# || '%' 
-                                      </isNotNull>)
-                   or addr_book_no in(select addr_book_no
-                            from semi_address_emails
-                            <isNotNull property="keyword">
-                              where email_addr like '%' || #keyword# || '%'
-                            </isNotNull>))
-            </isNotNull>
-          </dynamic>)
+			  from
+			  	semi_address_books
+		  	  where
+		  	  	addr_deleted = 'N'
+		  	  and 
+				emp_no = #empNo#
+	  	  	  	<dynamic>
+	  	  	  		<isNotNull property="keyword">
+	  	  	  			and (addr_first_name like '%' || #keyword# || '%'
+	  	  	  			     or addr_last_name like '%' || #keyword# || '%'
+	  	  	  			     or addr_company like '%' || #keyword# || '%'
+	  	  	  			     or addr_dept like '%' || #keyword# || '%'
+	  	  	  			     or addr_position like '%' || #keyword# || '%'
+	  	  	  			     or addr_book_no in (select addr_book_no 
+	  	  	  			                        from semi_address_contacts
+	  	  	  			                        <isNotNull property="keyword">
+	  	  	  			                        	where contact_tel like '%' || #keyword# || '%' 
+  	  	  										</isNotNull>)
+							 or addr_book_no in(select addr_book_no
+							 					from semi_address_emails
+							 					<isNotNull property="keyword">
+							 						where email_addr like '%' || #keyword# || '%'
+							 					</isNotNull>))
+	  	  	  		</isNotNull>
+	  	  	  	</dynamic>)
 		where
 			rowNumber between #begin# and #end#
-		and 
-			empNo = #empNo#
+		
 	</select>
 	
 	<select id="getBooksByGroupNo" parameterClass="map" resultClass="com.semi.address.vo.Book">
@@ -120,13 +121,13 @@
 				addr_deleted_date	as deletedDate,
 				emp_no				as empNo
 			  from
-			  	semi_address_books)
+			  	semi_address_books
+			  where
+				emp_no = #empNo#
+			  and
+			  	group_no = #groupNo#)
 		where
 			rowNumber between #begin# and #end#
-		and 
-			empNo = #empNo#
-		and
-			groupNo = #groupNo#
 	</select>
 	
 	<select id="getImportantBooks" parameterClass="map" resultClass="com.semi.address.vo.Book">
@@ -151,13 +152,13 @@
 				addr_deleted_date	as deletedDate,
 				emp_no				as empNo
 			  from
-			  	semi_address_books)
+			  	semi_address_books
+			  where 
+			  	emp_no = #empNo#
+			  and
+            	addr_important = 'Y')
 		where
 			rowNumber between #begin# and #end#
-        and
-            important = 'Y'
-        and
-        	empNo = #empNo#
 	</select>
 	
 	<select id="getBooksOrderbyRecentDate" parameterClass="map" resultClass="com.semi.address.vo.Book">
@@ -182,7 +183,9 @@
 				addr_deleted_date	as deletedDate,
 				emp_no				as empNo
 			  from
-			  	semi_address_books)
+			  	semi_address_books
+			  where
+			  	emp_no = #empNo#)
 		where
 			rowNumber between #begin# and #end#
         order by
