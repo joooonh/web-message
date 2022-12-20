@@ -12,5 +12,33 @@
 		from
 			semi_positions
 	</select>
+	
+	<select id="getPositionByNo" parameterClass="int" resultClass="com.semi.admin.vo.Position">
+		select
+			position_no as no,
+			position_name as name,
+			position_seq as seq
+		from
+			semi_positions
+		where
+			position_no = #value#
+	</select>
+	
+	<update id="updatePosition" parameterClass="com.semi.admin.vo.Position">
+		update
+			semi_positions
+		set
+			position_name = #name#,
+			position_seq = #seq#
+		where
+			position_no = #no#
+	</update>
+	
+	<insert id="insertPosition" parameterClass="com.semi.admin.vo.Position">
+		insert into semi_positions
+			(position_no, position_name, position_seq)
+		values
+			(semi_positions_seq.nextval, #name#, #seq#)
+	</insert>
 </sqlMap>
 

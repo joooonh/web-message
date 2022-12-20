@@ -29,5 +29,13 @@
 			semi_departments
 	</select>
 	
+	<update id="updatedDeparment" parameterClass="com.semi.admin.vo.Department">
+		update
+			semi_departments
+		set
+			department_name = #name#
+		where
+			department_no = #no#
+	</update>
 </sqlMap>
 

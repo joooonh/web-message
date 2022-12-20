@@ -6,6 +6,8 @@ public class Position {
 	private String name;
 	private int seq;
 	
+	public Position () {}
+	
 	public int getNo() {
 		return no;
 	}
