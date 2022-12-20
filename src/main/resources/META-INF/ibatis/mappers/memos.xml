@@ -10,6 +10,7 @@
      	memo_folder_no as folderNo,
      	memo_emp_no as empNo,
      	memo_content as content,
+     	memo_important as important,
      	memo_created_date as createdDate
      from semi_memos
      where memo_emp_no=#value#
@@ -31,6 +32,70 @@
 			memo_no = #value#
 	</delete>
 	
+	
+	<update id="updateMemo" parameterClass="com.semi.memo.vo.Memo">
+		update
+			semi_memos
+		set
+			memo_folder_no = #folderNo#,
+			memo_emp_no = #empNo#,
+			memo_important = #important#,
+			memo_content = #content#,
+			memo_deleted = #deleted#,
+			memo_updated_date = sysdate
+		where
+			memo_no = #no#
+	</update>
+	
+	<select id="getMemoByNo" parameterClass="int" resultClass="com.semi.memo.vo.Memo">
+		select
+		    memo_no as no,
+	     	memo_folder_no as folderNo,
+	     	memo_emp_no as empNo,
+	     	memo_content as content,
+	     	memo_important as important,
+	     	memo_created_date as createdDate
+			
+		from
+			semi_memos
+		where
+			memo_no = #value#
+	</select>
+	
+	<select id="getMemos" parameterClass="map" resultClass="com.semi.memo.vo.Memo">
+		select 
+			memo_no as no,
+     	    memo_folder_no as folderNo,
+     	    memo_emp_no as empNo,
+     	    memo_content as content,
+     	    memo_important as important,
+     	    memo_created_date as createdDate
+        
+		from
+		      semi_memos		
+ 	    where
+ 	    	memo_emp_no = #empNo#
+ 	    <dynamic>
+ 	    	<isNotNull property="folderNo">
+	 	    	and memo_folder_no = #folderNo#
+ 	    	</isNotNull>
+ 	    	<isNotNull property="important">
+	 			and memo_important= #important#
+ 	    	</isNotNull>
+ 	    	<isNotNull property="keyword">
+	 			and memo_content like '%' ||  #keyword# || '%'
+ 	    	</isNotNull>
+ 	    </dynamic>
+		order by
+			memo_no desc
+	</select>
+	
+	<select id="getTotalRows" resultClass="int">
+		select
+			count(*)
+		from
+			semi_memos
+	</select>
 	
   
 </sqlMap>
