@@ -5,6 +5,7 @@
 <%@page import="com.semi.admin.dao.EmployeeDao"%>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ include file="../logincheck.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,8 +19,8 @@
 
 <%
    //TODO session에서 로그인된 직원번호 조회
-   int empNo = 1006;
-  //int empNo = loginEmployee.getNo();
+   //int empNo = 1006;
+   int empNo = loginEmployee.getNo();
   
    int memoNo = Integer.parseInt(request.getParameter("memoNo"));
    String important= request.getParameter("important");

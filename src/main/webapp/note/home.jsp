@@ -28,8 +28,8 @@
 	<jsp:param name="menu" value="home"/>
 </jsp:include>
 <% 
-	int empNo = 1006; 
-    //int empNo = loginEmployee.getNo();
+	//int empNo = 1006; 
+    int empNo = loginEmployee.getNo();
 	
     MemoDao memoDao= new MemoDao();
 	int totalRows = memoDao.getTotalRows();
@@ -39,8 +39,8 @@
 	String keyword = request.getParameter("keyword");
 	
 	Map<String, Object> param = new HashMap<>(); 
-	param.put("empNo", empNo);
-	//param.put("empNo", loginEmployee.getNo());
+	//param.put("empNo", empNo);
+	param.put("empNo", loginEmployee.getNo());
 	if (folderNo != 0) {
 		param.put("folderNo", folderNo);
 	}
