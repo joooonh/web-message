@@ -75,8 +75,18 @@
 	AddressGroupDao addGroupDao = new AddressGroupDao();
 	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(empNo);
 	
+	String error = request.getParameter("error");
 %>
 <div class="container-fluid my-3">
+<%
+	if ("fail".equals(error)) {
+%>
+	<div class="alert alert-danger" style="font-size: 14px;">
+		<strong>등록 실패</strong> 이미 존재하는 그룹명입니다.
+	</div>
+<%
+	}
+%>
 	<div class="row">
 		<div class="col-2">
 			<div class="row mb-3">
@@ -114,6 +124,7 @@
 				  					</span>
 				    				<ul class="nested active">
 		<%
+			// 그룹리스트
 			if (!addGroupList.isEmpty()) {
 				for (Group group : addGroupList) {
 		%>
@@ -289,6 +300,27 @@
 		</div>
 	</div>
 </div>
+<!-------------------------------------- 그룹 등록폼 ------------------------------>
+<div class="modal" tabindex="-1" id="modal-form-address-group">
+	<div class="modal-dialog modal-sm">
+		<form id="from-add-addrGroup" method="post" action="registerGroupH.jsp">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">연락처 그룹 추가</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<p>그룹명을 입력하세요.</p>
+					<input type="text" class="form-control" name="name"/>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
+				<button type="submit" class="btn btn-primary btn-sm">등록</button>
+			</div>
+		</div>
+		</form>
+	</div>
+</div>
 <div class="modal" tabindex="-1" id="modal-form-address">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
@@ -413,6 +445,14 @@ $(function() {
 		
 		$("#form-book").trigger("submit");
 	})
+	
+	$("#from-add-addrGroup").submit(function() {
+		if ($("#from-add-addrGroup :input[name=name]").val() === "") {
+			alert("그룹이름은 필수입력값입니다.");
+			return false;
+		}
+		return true;
+	}); 
 	
 });
 </script>

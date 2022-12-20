@@ -25,4 +25,12 @@ public class AddressGroupDao {
 	public List<Group> getAddressGroups(Map<String, Object> param) {
 		return (List<Group>) SqlMapper.selectList("addressGroups.getAddressGroups", param);
 	}
+	
+	public void updateAddressGroup(Group group) {
+		SqlMapper.update("addressGroups.updateAddressGroup", group);
+	}
+	
+	public void deleteAddrGroup(int groupNo) {
+		SqlMapper.delete("addressGroups.deleteAddrGroup", groupNo);
+	}
 }

@@ -75,9 +75,22 @@
 	List<Book> bookList = bookDao.getBooks(param); 
 	
 	AddressGroupDao addGroupDao = new AddressGroupDao();
+
 	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(empNo);
+  
+	String error = request.getParameter("error");
+
 %>
 <div class="container-fluid my-3">
+<%
+	if ("fail".equals(error)) {
+%>
+	<div class="alert alert-danger" style="font-size: 14px;">
+		<strong>등록 실패</strong> 이미 존재하는 그룹명입니다.
+	</div>
+<%
+	}
+%>
 	<div class="row">
 		<div class="col-2">
 			<div class="row mb-3">
@@ -155,6 +168,7 @@
 			<hr/>
 			<div class="row mb-2">
 			<form id="form-book" method="get" action="move.jsp">
+				<input type="hidden" name="bookNo" value="" />
 				<div class="col-12 mn-3">
 					<a href="javascript:void(0);" id="deleteBtn" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> 삭제</a>
 					<select class="form-select form-select-sm d-inline" name="groupNo" style="width: 200px;" id="select-groups">
@@ -275,6 +289,7 @@
 		</div>
 	</div>
 </div>
+<!----------------------- 그룹 추가 모달폼 ------------------------>
 <div class="modal" tabindex="-1" id="modal-form-address-group">
 	<div class="modal-dialog modal-sm">
 		<form id="from-register-addrGroup" method="post" action="registerGroupH.jsp">
@@ -1049,11 +1064,20 @@ $(function(){
 			return false;
 		}
 		
-		var checkedCheckboxLength = $("#table-address-books :checkbox[name=bookNo]:checked").length
+		var checkedCheckboxLength = $("#table-address-list :checkbox[name=bookNo]:checked").length
 		if (checkedCheckboxLength == 0) {
 			alert("이동할 주소록을 하나 이상 선택하세요.")
 			return false;
 		}
+		
+		var addressBookNo = [];
+		
+		// 선택한 주소록을 각각 배열에 담는다. 
+		$("input[name=bookNo]:checked").each(function(){
+			 addressBookNo.push($(this).val());
+		});
+		
+		$('#form-book input[name=bookNo]').val(addressBookNo);
 		
 		$("#form-book").trigger("submit");
 	});
@@ -1080,13 +1104,12 @@ $(function(){
 		});
 		
 		// 삭제할 주소록을 deleteAddress.jsp에 보낸다.
-		location.href = "deleteAddress.jsp?addressBookNo="+addressBookNo;
+		location.href = "completeDeleteAddress.jsp?addressBookNo="+addressBookNo;
 	});
 	
 	// 페이지 번호 클릭했을때 발생하는 이벤트
 	function changePage(event,page) {
 		event.preventDefault();
-		
 		submitForm(page);
 	}
 	

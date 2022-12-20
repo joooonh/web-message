@@ -27,13 +27,23 @@
 <jsp:include page="../common/header.jsp">
 	<jsp:param name="menu" value="home"/>
 </jsp:include>
-<div class="container-fluid my-3">
 <%
 	
 	AddressGroupDao addGroupDao = new AddressGroupDao();
 	// 직원번호로 조회한 그룹정보
 	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(loginEmployee.getNo());
 	
+	String error = request.getParameter("error");
+%>
+<div class="container-fluid my-3">
+<%
+	if ("fail".equals(error)) {
+%>
+	<div class="alert alert-danger" style="font-size: 14px;">
+		<strong>등록 실패</strong> 이미 존재하는 그룹명입니다.
+	</div>
+<%
+	}
 %>
 	<div class="row">
 		<div class="col-2">
@@ -62,7 +72,7 @@
 							<ul class="tree" style="cursor:pointer;">
 				  				<li>
 				  					<span>
-				  						<a href="home.jsp" class="text-decoration-none text-dark"><i class="bi bi-person-lines-fill me-2"></i><mark>전체 연락처</mark></a>
+				  						<a href="home.jsp" class="text-decoration-none text-dark"><i class="bi bi-person-lines-fill me-2"></i>전체 연락처</a>
 				  						<a href="control.jsp" class="text-decoration-none text-dark float-end"><i class="bi bi-gear-fill"></i></a>
 				  					</span>
 				    				<ul class="nested active">
@@ -108,7 +118,7 @@
 			<hr/>
 			<div class="row mb-2">
 				<div class="col">
-					<button class="btn btn-outline-secondary btn-xs rounded-0" onclick="checkAll">전체 선택</button>
+					<button class="btn btn-outline-secondary btn-xs rounded-0">전체 선택</button>
 					<button class="btn btn-outline-secondary btn-xs rounded-0"><i class="bi bi-trash"></i> 삭제</button>
 					
 					<div class="btn-group" role="group" aria-label="Basic example">
@@ -120,7 +130,7 @@
 				</div>
 			</div>
 			<div class="row mb-2">
-				<table class="table table-sm border-top">
+				<table class="table table-sm border-top" id="table-groups">
 					<colgroup>
 						<col width="5%">
 						<col width="20%">
@@ -147,12 +157,12 @@
 					for (Group group : addGroupList) {
 			%>
 						<tr class="small">
-							<td><input type="checkbox" name="groupNo" value="100"></td>
+							<td><input type="checkbox" name="groupNo" value="<%=group.getNo() %>"></td>
 							<td><%=group.getName()%></td>
 							<td></td>
 							<td>
-								<button class="btn btn-outline-danger btn-xs rounded-0" data-group-no="100">삭제</button>
-								<button class="btn btn-outline-warning btn-xs rounded-0" data-group-no="100">수정</button>
+								<a href="delete-group.jsp?groupNo=<%=group.getNo() %>"><button class="btn btn-outline-danger btn-xs rounded-0" data-group-no="<%=group.getNo() %>">삭제</button></a>
+								<button class="btn btn-outline-warning btn-xs rounded-0" data-group-no="<%=group.getNo() %>" data-group-name="<%=group.getName()%>" >수정</button>
 							</td>
 						</tr>
 			<%
@@ -165,9 +175,10 @@
 		</div>
 	</div>
 </div>
+<!--------------------------- 그룹 수정 ------------------------------>
 <div class="modal" tabindex="-1" id="modal-modifyform-address-group">
 	<div class="modal-dialog modal-sm">
-	<form method="post" action="modify.jsp">
+	<form id="form-change-groupName" method="post" action="modify-group.jsp">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title">연락처 그룹  수정</h5>
@@ -175,8 +186,8 @@
 			</div>
 			<div class="modal-body">
 				<p>그룹명을 입력하세요.</p>
-					<input type="hidden" name="groupNo" value="100" />
-					<input type="text" class="form-control" name="groupName" value="친구"/>
+					<input type="hidden" name="groupNo" value="" />
+					<input type="text" class="form-control" name="groupName" value=""/>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
@@ -186,9 +197,10 @@
 	</form>
 	</div>
 </div>
+<!--------------------------- 그룹 등록 ------------------------->
 <div class="modal" tabindex="-1" id="modal-form-address-group">
 	<div class="modal-dialog modal-sm">
-		<form id="form-add-addrGroup" method="post" action="registerGroupC.jsp">
+		<form id="from-register-addrGroup" method="post" action="registerGroupC.jsp">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h5 class="modal-title">연락처 그룹 추가</h5>
@@ -314,6 +326,30 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 <script type="text/javascript">
 $(function() {
+	
+	// 그룹 수정
+	var addressGroupModifyFormModal = new bootstrap.Modal("#modal-modifyform-address-group");
+	
+	$("#table-groups .btn-outline-warning").click(function() {
+		var groupNo = $(this).attr("data-group-no");
+		var groupName = $(this).attr("data-group-name");
+		
+		$("#modal-modifyform-address-group :input[name=groupNo]").val(groupNo);
+		$("#modal-modifyform-address-group :input[name=groupName]").val(groupName);
+		
+		addressGroupModifyFormModal.show();
+	})
+	
+	$("#form-change-groupName").submit(function() {
+		if ($("#form-change-groupName :input[name=groupName]").val() === "") {
+			alert("그룹이름은 필수입력값입니다.");
+			return false;
+		}
+		return true;
+	})
+	
+	// 그룹 삭제
+	
 	// 그룹명 선택/해제
 	$("#checkbox-all").change(function() {
 		var checkboxAllChecked = $(this).prop("checked");
@@ -337,18 +373,13 @@ $(function() {
 	}
 	
 	//그룹 등록
-	/*
 	$("#from-register-addrGroup").submit(function() {
-		let name = $(":input[name=name]").val();
-		
-		if (name === "") {
-			alert("그룹명은 필수입력 값입니다.");
+		if ($("#from-register-addrGroup :input[name=name]").val() === "") {
+			alert("그룹이름은 필수입력값입니다.");
 			return false;
 		}
-		
 		return true;
 	})
-	*/
 	
 	$("#form-add-addrGroup").submit(function() {
 		let groupName = $(":input[name=name]").val();
