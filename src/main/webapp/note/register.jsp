@@ -1,5 +1,8 @@
 <%@page import="com.semi.memo.vo.Memo"%>
 <%@page import="com.semi.memo.dao.MemoDao"%>
+<%@page import="com.semi.admin.vo.Employee"%>
+<%@page import="com.semi.admin.dao.EmployeeDao"%>
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -15,6 +18,7 @@
 <%
    //TODO session에서 로그인된 직원번호 조회
    int empNo = 1006;
+  //int empNo = loginEmployee.getNo();
 
    int folderNo = Integer.parseInt(request.getParameter("folderNo"));
    String content = request.getParameter("content");
