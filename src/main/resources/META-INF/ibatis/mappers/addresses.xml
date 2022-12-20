@@ -4,12 +4,59 @@
  
 <sqlMap namespace="addresses">
 
+	<select id="getAddressesByBookNo" parameterClass="int" resultClass="com.semi.address.vo.Address">
+		select 
+			address_type 		as type,
+			address_default_yn	as defaultYN,
+			address_zipcode		as zipcode,
+			address_basic		as basic,
+			address_detail		as detail,
+			addr_book_no		as bookNo
+		from
+			semi_address
+		where
+			addr_book_no = #value#
+	</select>
+
 	<insert id="insertAddress" parameterClass="com.semi.address.vo.Address">
 		insert into semi_address
-			(address_type, address_zipcode, address_basic, address_detail, addr_book_no)
+			(address_type, address_default_yn, address_zipcode, address_basic, address_detail, addr_book_no)
 		values
-			(#type#, #zipcode#, #basic#, #detail#, #bookNo#)
+			(#type#, #defaultYN#, #zipcode#, #basic#, #detail#, #bookNo#)
 	</insert>
 	
+	<select id="getAddressByBookNo" parameterClass="int" resultClass="com.semi.address.vo.Address">
+		select
+			address_type		as type,
+			address_default_yn	as defaultYN,
+			address_zipcode		as zipcode,
+			address_basic		as basic,
+			address_detail		as detail,
+			addr_book_no		as bookNo
+		from
+			semi_address
+		where
+			addr_book_no = #value#
+	</select>
+	
+	<update id="updateAddress" parameterClass="com.semi.address.vo.Address">
+		update
+			semi_address
+		set
+			address_type = #type#,
+			address_default_yn = #defaultYN#,
+			address_zipcode = #zipcode#,
+			address_basic = #basic#,
+			address_detail = #detail#
+		where
+			addr_book_no = #bookNo#
+	</update>
+	
+	<delete id="deleteAddressByBookNo" parameterClass="int">
+		delete from
+			semi_address
+		where
+			addr_book_no = #value#
+	</delete>
 </sqlMap>
 

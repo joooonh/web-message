@@ -9,6 +9,8 @@ public class Address {
 	private String detail; 
 	private int bookNo;
 	
+	public Address() {}
+	
 	public String getType() {
 		return type;
 	}

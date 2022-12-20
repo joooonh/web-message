@@ -1,5 +1,8 @@
+<%@page import="com.semi.admin.vo.Employee"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ include file="../logincheck.jsp" %>
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -7,7 +10,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
-<link href="/web-community/resources/css/style.css" rel="stylesheet">
+<link href="/web-message/resources/css/style.css" rel="stylesheet">
 <title>사내 커뮤니티</title>
 </head>
 <body>

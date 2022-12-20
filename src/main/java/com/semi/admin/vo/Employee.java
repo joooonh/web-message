@@ -4,31 +4,27 @@ import java.util.Date;
 
 public class Employee {
 
-	private int no;
-	private String id;
-	private String password;
-	private String photo;
-	private String name;
-	private String email;
-	private String phone;
-	private int deptNo;
-	private int positionNo;
-	private String deleted;
-	private Date createdDate;
-	private Date updatedDate;
-	private Date deletedDate;
+	private int no;			// 직원번호
+	private String password;	// 직원비밀번호
+	private String photo;		// 직원사진
+	private String name;		// 직원이름
+	private String email;		// 이메일
+	private String phone;		// 전화번호
+	private int deptNo;			// 소속부서번호
+	private int positionNo;		// 직위번호
+	private String deleted;		// 직원정보 삭제여부
+	private Date createdDate;	// 등록일
+	private Date updatedDate;	// 수정일
+	private Date deletedDate;	// 삭제일
+	private String type;		// 직원타입
+	
+	public Employee() {}
 	
 	public int getNo() {
 		return no;
 	}
 	public void setNo(int no) {
 		this.no = no;
-	}
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
 	}
 	public String getPassword() {
 		return password;
@@ -96,7 +92,19 @@ public class Employee {
 	public void setDeletedDate(Date deletedDate) {
 		this.deletedDate = deletedDate;
 	}
-	
-	
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	@Override
+	public String toString() {
+		return "Employee [no=" + no + ", password=" + password + ", photo=" + photo + ", name=" + name + ", email="
+				+ email + ", phone=" + phone + ", deptNo=" + deptNo + ", positionNo=" + positionNo + ", deleted="
+				+ deleted + ", createdDate=" + createdDate + ", updatedDate=" + updatedDate + ", deletedDate="
+				+ deletedDate + ", type=" + type + "]";
+	}
 	
 }

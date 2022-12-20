@@ -9,14 +9,8 @@
 <%@page import="com.semi.address.dao.BookDao"%>
 <%@page import="com.semi.util.StringUtils"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
+<%@ include file="../logincheck.jsp" %>
 <%
-
-/*
-	
-	** 프로필사진, 중요주소록여부, 기본연락처, 기본이메일, 기본주소여부 추가 필요 
-	** 성이름, 그룹번호, 전화번호, 이메일, 주소 - not null 
-	
-*/
 
 	// Book 객체 
 	String firstName = request.getParameter("firstName");
@@ -26,7 +20,11 @@
 	String deptName = request.getParameter("deptName");
 	String positionName = request.getParameter("positionName");
 	String memo = request.getParameter("memo");
-	// 프로필사진 추가 
+	String important = request.getParameter("important"); 
+	// 기본연락처로 저장된 행 인덱스의 값
+	int contactIndex = StringUtils.stringToInt(request.getParameter("contact-index"));
+	int emailIndex = StringUtils.stringToInt(request.getParameter("email-index"));
+	int addressIndex = StringUtils.stringToInt(request.getParameter("address-index"));
 	
 	// Contact 객체 
 	String[] contactTypeArray = request.getParameterValues("contactType");	
@@ -41,8 +39,11 @@
 	String[] address1Array = request.getParameterValues("addr1");
 	String[] address2Array = request.getParameterValues("addr2");
 	
+	// session에서 로그인된 직원번호 조회
+	int empNo = loginEmployee.getNo();
+	
 	// BookDao 객체 얻기 
-	BookDao bookDao = new BookDao();
+	BookDao bookDao = BookDao.getInstance();
 	// 주소록 번호 저장
 	int bookNo = bookDao.getSequence(); 
 	
@@ -56,41 +57,76 @@
 	book.setDept(deptName);
 	book.setPosition(positionName);
 	book.setMemo(memo);
+	book.setImportant(important); 
+	book.setEmpNo(empNo);
  
 	bookDao.insertBook(book); 
 	
 	// 각각 Dao 생성
-	AddressDao addressDao = new AddressDao(); 
-	EmailDao emailDao = new EmailDao(); 
-	ContactDao contactDao = new ContactDao();
+	AddressDao addressDao = AddressDao.getInstance(); 
+	EmailDao emailDao = EmailDao.getInstance(); 
+	ContactDao contactDao = ContactDao.getInstance();
 		
 	// Contact 연락처 넣기 
 	for(int i=0; i<contactTypeArray.length; i++){
+		
+		if(telArray[i].isBlank()){
+			continue;
+		}
+			
 		Contact contact = new Contact(); 
 		contact.setType(contactTypeArray[i]); 
 		contact.setTel(telArray[i]); 
 		contact.setBookNo(bookNo); 
+		// 기본연락처 여부
+		if(contactIndex == i){
+				contact.setDefaultYN("Y");
+			} else {
+				contact.setDefaultYN("N");
+			}
 		
 		contactDao.insertContact(contact); 
 	}
 	
 	// 이메일 넣기 
 	for(int i=0; i<emailArray.length; i++){
+		
+		if(emailArray[i].isBlank()){
+			continue;
+		}
+		
 		Email email = new Email(); 
 		email.setAddr(emailArray[i]);
 		email.setBookNo(bookNo); 
+		// 기본이메일 여부 
+		if(emailIndex == i){
+			email.setDefaultYN("Y");
+		} else {
+			email.setDefaultYN("N"); 
+		}
 		
 		emailDao.insertEmail(email);
 	}
 	
 	// 주소 넣기 
 	for(int i=0; i<zipcodeArray.length; i++){
+		
+		if(zipcodeArray[i].isBlank() || address1Array[i].isBlank() || address2Array[i].isBlank()){
+			continue;
+		}
+		
 		Address address = new Address(); 
 		address.setType(addrTypeArray[i]);
 		address.setZipcode(zipcodeArray[i]);
 		address.setBasic(address1Array[i]);
 		address.setDetail(address2Array[i]);
 		address.setBookNo(bookNo); 
+		// 기본주소 여부 
+		if(addressIndex == i){
+			address.setDefaultYN("Y");
+		} else {
+			address.setDefaultYN("N");
+		}
 		
 		addressDao.insertAddress(address);
 	}

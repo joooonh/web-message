@@ -1,3 +1,4 @@
+<%@page import="com.semi.admin.vo.Employee"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -14,6 +15,7 @@
 <jsp:include page="common/header.jsp">
 	<jsp:param name="menu" value="home"/>
 </jsp:include>
+
 <div class="container my-3">
 	<div class="row">
 		<div class="col-9">
@@ -29,11 +31,58 @@
 		    </div>
 		</div>
 		<div class="col-3">
-			<jsp:include page="common/loginform.jsp" />
+		
+			<div class="border p-3 bg-light">
+				<p>로그인 정보</p>
+				
+<%
+	String error = request.getParameter("error");
+%>
+
+<%
+	if ("fail".equals(error)) {
+%>
+	<div class="alert alert-danger" style="font-size: 14px;">
+		<strong>로그인 실패</strong> 사원번호 혹은 비밀번호가 일치하지 않습니다.
+	</div>
+<%
+	}
+%>
+				<form id="form-login" class="" method="post" action="login.jsp">
+					<div class="mb-3">
+						<input type="text" class="form-control form-control-sm" name="no"  placeholder="사원번호"/>
+					</div>
+					<div class="mb-3">
+						<input type="password" class="form-control form-control-sm" name="password"  placeholder="비밀번호"/>
+					</div>
+					<div class="d-grid gap-2">
+						<button type="submit" class="btn btn-success btn-sm">로그인</button>
+					</div>
+				</form>
+			</div>
+			
 		</div>
 	</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script type="text/javascript">
+$(function() {
+	$("#form-login").submit(function() {
+		let empNo = $(":input[name=no]").val();
+		let empPassword = $(":input[name=password]").val()
+		if (empNo === "") {
+			alert("아이디는 필수입력값입니다.");
+			return false;
+		}
+		if (empPassword === "") {
+			alert("비밀번호는 필수입력값입니다.");
+			return false;
+		}
+		
+		return true;
+	});
+})
+</script>
 </body>
 </html>
