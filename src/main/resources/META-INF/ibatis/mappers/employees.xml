@@ -100,8 +100,6 @@
 		from
 			semi_employees
 		where
-			emp_deleted = 'Y'
-		and
 			emp_no = #value#
 	</select>
 	
@@ -123,7 +121,7 @@
 		from
 			semi_employees
 		where
-			emp_deleted = 'Y'
+			emp_deleted = 'N'
 	 	order by 
 	 		emp_no desc
 	</select>
@@ -179,7 +177,7 @@
 			emp_position_no = #positionNo#,
 			emp_deleted = #deleted#,
 			emp_updated_date = sysdate,
-			emp_deleted_date = #deletedDate#,
+			emp_deleted_date = sysdate,
 			emp_type = #type#
 		where
 			emp_no = #no#
