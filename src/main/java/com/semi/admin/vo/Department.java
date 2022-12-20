@@ -5,6 +5,8 @@ public class Department {
 	private int no;
 	private String name;
 	
+	public Department() {}
+	
 	public int getNo() {
 		return no;
 	}
