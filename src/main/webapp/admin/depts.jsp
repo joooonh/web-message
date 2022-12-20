@@ -166,10 +166,10 @@
 						</tbody>
 					</table>
 					<div>
-						<button type="button" onclick="moveTop(this)" class="btn btn-outline-secondary btn-xs">맨 위로</button>
-						<button type="button" onclick="moveUp(this)" class="btn btn-outline-secondary btn-xs">위로</button>
-						<button type="button" onclick="moveDown(this)" class="btn btn-outline-secondary btn-xs">아래로</button>
-						<button type="button" onclick="moveBottom(this)" class="btn btn-outline-secondary btn-xs">맨 아래로</button>
+						<button class="btn btn-outline-secondary btn-xs" id="top">맨 위로</button>
+						<button class="btn btn-outline-secondary btn-xs" id="up">위로</button>
+						<button class="btn btn-outline-secondary btn-xs" id="down">아래로</button>
+						<button class="btn btn-outline-secondary btn-xs" id="bottom">맨 아래로</button>
 					</div>
 				</div>
 				<div class="card-footer text-end">
@@ -302,7 +302,41 @@ $(function() {
 		
 		positionModifyFormModal.show();
 	});	
-});
+	
+	// 맨위로이동
+	$("#top").click(function() {
+		var $checkedCheckbox = $("#table-position tbody :checkbox:checked");
+		var $row = $checkedCheckbox.closest("tr");
+		
+		$row.insertBefore($row.parent().find('tr:first-child'));
+	})
+	
+	// 위로이동
+	$("#up").click(function() {
+		var $checkedCheckbox = $("#table-position tbody :checkbox:checked");
+		var $row = $checkedCheckbox.closest("tr");
+		
+		$row.prev().before($row);
+	})	
+	
+	// 아래로이동
+	$("#down").click(function() {
+		var $checkedCheckbox = $("#table-position tbody :checkbox:checked");
+		var $row = $checkedCheckbox.closest("tr");
+		
+		$row.next().after($row);
+	})	
+
+	// 맨아래로이동
+	$("#bottom").click(function() {
+		var $checkedCheckbox = $("#table-position tbody :checkbox:checked");
+		var $row = $checkedCheckbox.closest("tr");
+		
+		$row.insertAfter($row.parent().find('tr:last-child'));
+	})
+	
+	
+});	
 </script>
 </body>
 </html>
