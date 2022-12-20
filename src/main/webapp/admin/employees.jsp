@@ -46,6 +46,8 @@
 	List<EmployeeDto> employeeList = employeeDao.getEmployees(param);
 	List<Department> departmentList = departmentDao.getAllDepartments();
 	List<Position> positionList = positionDao.getAllPositions();
+	
+	String error = request.getParameter("error");
 %>
 <div class="container my-3">
 	<div class="row mb-3">
@@ -54,6 +56,15 @@
 		</div>
 	</div>
 	<div class="row mb-3">
+<%
+	if ("fail".equals(error)) {
+%>
+	<div class="alert alert-danger" style="font-size: 14px;">
+		<strong>등록 실패</strong> 이미 존재하는 이메일입니다.
+	</div>
+<%
+	}
+%>
 		<div class="col">
 			<div class="card">
 				<div class="card-header">직원 리스트</div>
@@ -93,7 +104,7 @@
 								<td><%=empDto.getEmail() %></td>
 								<td>
 									<button class="btn btn-outline-primary btn-xs" data-emp-no="<%=empDto.getEmpNo() %>">상세정보</button>
-									<a href="employees-delete.jsp?empNo=<%=empDto.getEmpNo() %>" class="btn btn-danger btn-xs">삭제</a>
+									<a href="employees-delete.jsp?empNo=<%=empDto.getEmpNo() %>" class="btn btn-danger btn-xs <%=empDto.getDeleted().equals("Y") ? "disabled" : "" %>">삭제</a>
 								</td>
 							</tr>
 <%
@@ -216,6 +227,7 @@
 	</form>
 	</div>
 </div>
+<!-------------------------------------------- 직원상세정보 -------------------------------------------------->
 <div class="modal" tabindex="-1" id="modal-detailform-employees">
 	<div class="modal-dialog">
 	<form class="border p-3 bg-light" method="post" action="employees-modify.jsp">
@@ -355,8 +367,7 @@ $(function() {
 			employeeDetailModal.show();
 		})
 	});
-	
-});
+});	
 </script>
 </body>
 </html>

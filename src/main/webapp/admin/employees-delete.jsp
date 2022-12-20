@@ -8,7 +8,7 @@
 	EmployeeDao employeeDao = EmployeeDao.getInstance();
 	
 	Employee employee = employeeDao.getEmployeeByNo(empNo);
-	employee.setDeleted("N");
+	employee.setDeleted("Y");
 	
 	employeeDao.updateEmployee(employee);
 	

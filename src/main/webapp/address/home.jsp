@@ -76,8 +76,19 @@
 	
 	AddressGroupDao addGroupDao = new AddressGroupDao();
 	List<Group> addGroupList = addGroupDao.getAddGroupsByEmpNo(loginEmployee.getNo());
+	
+	String error = request.getParameter("error");
 %>
 <div class="container-fluid my-3">
+<%
+	if ("fail".equals(error)) {
+%>
+	<div class="alert alert-danger" style="font-size: 14px;">
+		<strong>등록 실패</strong> 이미 존재하는 그룹명입니다.
+	</div>
+<%
+	}
+%>
 	<div class="row">
 		<div class="col-2">
 			<div class="row mb-3">
@@ -278,6 +289,7 @@
 		</div>
 	</div>
 </div>
+<!----------------------- 그룹 추가 모달폼 ------------------------>
 <div class="modal" tabindex="-1" id="modal-form-address-group">
 	<div class="modal-dialog modal-sm">
 		<form id="from-register-addrGroup" method="post" action="registerGroupH.jsp">
