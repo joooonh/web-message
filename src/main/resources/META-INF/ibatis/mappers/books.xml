@@ -18,6 +18,8 @@
 			semi_address_books
 		where
 			emp_no = #value#
+		and
+			addr_deleted = 'N'
 	</select>
 	
 	<select id="getTotalImportantRows" parameterClass="int" resultClass="int">
@@ -29,6 +31,8 @@
 			addr_important = 'Y'
 		and
 			emp_no = #value#
+		and
+			addr_deleted = 'N'
 	</select>
 	
 	<select id="getTotalRowsByGroupNo" parameterClass="map" resultClass="int">
@@ -40,6 +44,8 @@
 			emp_no = #empNo#
 		and
 			group_no = #groupNo#
+		and
+			addr_deleted = 'N'
 	</select>
 	
 	<select id="getBooks" parameterClass="map" resultClass="com.semi.address.vo.Book">
@@ -63,11 +69,29 @@
 				addr_updated_date	as updatedDate,
 				addr_deleted_date	as deletedDate,
 				emp_no				as empNo
-			  from
-			  	semi_address_books
-			  <!-- 삭제여부가 'N' 인 주소록 -->
-			  where
-			  	addr_deleted = 'N')
+			from
+			  semi_address_books
+		  where
+        addr_deleted = 'N'
+          <dynamic>
+            <isNotNull property="keyword">
+              and (addr_first_name like '%' || #keyword# || '%'
+                   or addr_last_name like '%' || #keyword# || '%'
+                   or addr_company like '%' || #keyword# || '%'
+                   or addr_dept like '%' || #keyword# || '%'
+                   or addr_position like '%' || #keyword# || '%'
+                   or addr_book_no in (select addr_book_no 
+                                      from semi_address_contacts
+                                      <isNotNull property="keyword">
+                                        where contact_tel like '%' || #keyword# || '%' 
+                                      </isNotNull>)
+                   or addr_book_no in(select addr_book_no
+                            from semi_address_emails
+                            <isNotNull property="keyword">
+                              where email_addr like '%' || #keyword# || '%'
+                            </isNotNull>))
+            </isNotNull>
+          </dynamic>)
 		where
 			rowNumber between #begin# and #end#
 		and 
