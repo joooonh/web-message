@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" 
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="messageGroup">
+
+	<!-- 
+		MessageGroup객체 -> SEMI_MESSAGE_GROUPS 테이블에 저장
+		
+	 -->
+	<insert id="insertMessageGroup" parameterClass="com.semi.message.vo.MessageGroup">
+		insert into SEMI_MESSAGE_GROUPS
+		(group_no, group_name, emp_no)
+		values
+		(SEMI_MESSAGE_GROUPS_SEQ.nextval, #groupName#, #empNo#)
+	</insert>
+	
+	<select id="getMessageGroupsByGroupNo" parameterClass="int" resultClass="com.semi.message.vo.MessageGroup">
+		select
+			group_no as groupNo,
+			group_name as groupName,
+			group_deleted as deleted,
+			group_created_date as createdDate,
+			group_updated_date as updatedDate,
+			group_deleted_date as deleted,
+			group_shareable as shareable,
+			emp_no as empNo
+		from
+			SEMI_MESSAGE_GROUPS
+		where
+			group_no = #groupNo#
+	</select>
+	
+		<select id="getMessageGroupsByEmpNo" parameterClass="int" resultClass="com.semi.message.vo.MessageGroup">
+		select
+			group_no as groupNo,
+			group_name as groupName,
+			group_deleted as deleted,
+			group_created_date as createdDate,
+			group_updated_date as updatedDate,
+			group_deleted_date as deleted,
+			group_shareable as shareable,
+			emp_no as empNo
+		from
+			SEMI_MESSAGE_GROUPS
+		where
+			emp_no = #value#
+	</select>
+	
+<!-- 
+		변경된 MessageGroup 내용 -> SEMI_MESSAGE_GROUPS 테이블에 반영
+		
+		public void updateMessageGroup(MessageGroup messageGroup) {
+			SqlMapper.update("updateMessageGroup", messageGroup);
+		}
+	 -->
+	<update id="updateMessageGroup" parameterClass="com.semi.message.vo.MessageGroup">
+		update
+			SEMI_MESSAGE_GROUPS
+		set
+			group_name = #groupName#,
+			group_deleted = #deleted#,
+			group_created_date = #createdDate#,
+			group_updated_date = #updatedDate#,
+			group_deleted_date = #deletedDate#,
+			group_shareable = #shareable#,
+			emp_no= #empNo#
+		where
+			group_no = #groupNo#
+	</update> 
+	
+	<!-- 
+		메세지 그룹 번호를 전달받아서 SEMI_MESSAGE_GROUPS에서 메세지 그룹 정보를 삭제한다.
+		}
+	 -->
+	<delete id="deleteMessageGroup" parameterClass="int">
+		delete from 
+			SEMI_MESSAGE_GROUPS
+		where
+			group_no = #value#
+	</delete>
+</sqlMap>

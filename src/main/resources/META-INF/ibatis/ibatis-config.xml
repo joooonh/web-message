@@ -25,11 +25,10 @@
 	<sqlMap resource="META-INF/ibatis/mappers/emails.xml" />	
 	<sqlMap resource="META-INF/ibatis/mappers/addressBooks.xml" />	
 	<sqlMap resource="META-INF/ibatis/mappers/employees.xml" />	
-
 	<sqlMap resource="META-INF/ibatis/mappers/messages.xml" />	
 	<sqlMap resource="META-INF/ibatis/mappers/folders.xml" />	
 	<sqlMap resource="META-INF/ibatis/mappers/memos.xml" />	
+	<sqlMap resource="META-INF/ibatis/mappers/messageGroup.xml" />	
 	<sqlMap resource="META-INF/ibatis/mappers/photos.xml" />	
-	<sqlMap resource="META-INF/ibatis/mappers/addressGroups.xml" />	
-
+	<sqlMap resource="META-INF/ibatis/mappers/addressGroups.xml" />		
 </sqlMapConfig>

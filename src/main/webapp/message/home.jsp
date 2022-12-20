@@ -113,6 +113,7 @@
 					<a href="" class="btn btn-outline-secondary btn-sm">보관</a>
 					<a href="" class="btn btn-outline-secondary btn-sm">스팸신고</a>
 					<a href="" class="btn btn-outline-secondary btn-sm">답장</a>
+					<a href="groups.jsp" class="btn btn-outline-secondary btn-sm ms-3"><i class="bi bi-gear-fill"></i> 메세지 그룹 관리</a>
 				</div>
 			</div>
 			<div class="row mb-2">
