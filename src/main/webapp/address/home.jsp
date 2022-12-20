@@ -156,6 +156,7 @@
 			<hr/>
 			<div class="row mb-2">
 			<form id="form-book" method="get" action="move.jsp">
+				<input type="hidden" name="bookNo" value="" />
 				<div class="col-12 mn-3">
 					<a href="javascript:void(0);" id="deleteBtn" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> 삭제</a>
 					<a href="javascript:void(0);" id="compleetDeleteBtn" class="btn btn-outline-danger btn-sm d-none"><i class="bi bi-trash"></i> 완전삭제</a>
@@ -1063,11 +1064,20 @@ $(function(){
 			return false;
 		}
 		
-		var checkedCheckboxLength = $("#table-address-books :checkbox[name=bookNo]:checked").length
+		var checkedCheckboxLength = $("#table-address-list :checkbox[name=bookNo]:checked").length
 		if (checkedCheckboxLength == 0) {
 			alert("이동할 주소록을 하나 이상 선택하세요.")
 			return false;
 		}
+		
+		var addressBookNo = [];
+		
+		// 선택한 주소록을 각각 배열에 담는다. 
+		$("input[name=bookNo]:checked").each(function(){
+			 addressBookNo.push($(this).val());
+		});
+		
+		$('#form-book input[name=bookNo]').val(addressBookNo);
 		
 		$("#form-book").trigger("submit");
 	});
@@ -1136,6 +1146,13 @@ $(function(){
 		// 삭제할 주소록을 deleteAddress.jsp에 보낸다.
 		location.href = "completeDeleteAddress.jsp?addressBookNo="+addressBookNo;
 	});
+
+	// form 태그 전송
+	function submitForm(page) {
+		$("input[name=page]").val(page);
+		
+		$("#deliverForm").submit();
+	};
 		
 	// 휴지통 클릭했을 때 이벤트
 	$("#wastebasket").click(function(){
