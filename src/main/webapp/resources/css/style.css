@@ -18,10 +18,9 @@
 }
 
 .btn-xs {
-	margin-top: -4px; 
 	--bs-btn-padding-y: .25rem; 
 	--bs-btn-padding-x: .5rem; 
-	--bs-btn-font-size: .75rem;
+	--bs-btn-font-size: .60rem;
 }
 .form-select-xs, .form-control-xs {
 	min-height: calc(1.5em + 0.5rem + 2px);

@@ -101,7 +101,7 @@
 		from
 			semi_employees
 		where
-			emp_deleted = 'Y'
+			emp_deleted = 'N'
 		and
 			emp_no = #value#
 	</select>

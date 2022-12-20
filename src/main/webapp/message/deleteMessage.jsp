@@ -2,8 +2,9 @@
 <%@page import="com.semi.message.dao.MessageDao"%>
 <%@page import="com.semi.message.dto.MessageDeleteDto"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
+<%@ include file="../logincheck.jsp" %>
 <%
-	int empNo = 1000; // logincheck.jsp로부터 가져온 값
+	int empNo = loginEmployee.getNo(); // logincheck.jsp로부터 가져온 값
 	MessageDao messageDao = MessageDao.getInstance();
 	
 	MessageDeleteDto messageDeleteDto = new MessageDeleteDto();
