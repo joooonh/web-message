@@ -9,6 +9,12 @@ import com.semi.util.SqlMapper;
 
 public class AddressBookDao {
 	
+	private static AddressBookDao instance = new AddressBookDao();
+	private AddressBookDao() {}
+	public static AddressBookDao getInstance() {
+		return instance;
+	}
+	
 	/**
 	 * 직원번호에 해당하는 주소록중 삭제여부가 Y인 주소록 정보를 조회
 	 * @param empNo 직원번호

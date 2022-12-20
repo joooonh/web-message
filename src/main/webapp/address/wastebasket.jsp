@@ -11,9 +11,10 @@
 <%
 	// 직원번호를 저장한다.
 	int empNo = Integer.parseInt(request.getParameter("empNo"));
+	// 페이지 번호를 저장한다.
 	String pageNo = request.getParameter("pageNo");
 	
-	AddressBookDao addressBookDao = new AddressBookDao();
+	AddressBookDao addressBookDao = AddressBookDao.getInstance();
 	
 	// 휴지통 페이징 처리에 필요한 정보	
 	int currentPage = StringUtils.stringToInt(pageNo, 1);
