@@ -7,10 +7,11 @@
 
 <%@page import="com.semi.util.StringUtils"%>
 <%@ page contentType="text/plain; charset=UTF-8" pageEncoding="utf-8" trimDirectiveWhitespaces="true"%>
+<%@ include file="../logincheck.jsp" %>
    
    <% 
-    int empNo = 1006;
-   //int empNo = loginEmployee.getNo();
+    //int empNo = 1006;
+    int empNo = loginEmployee.getNo();
     int memoNo = Integer.parseInt(request.getParameter("memoNo"));
 	int folderNo = Integer.parseInt(request.getParameter("folderNo"));
 
