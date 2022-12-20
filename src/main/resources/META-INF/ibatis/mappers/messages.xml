@@ -15,28 +15,31 @@
 		WHERE
 		<dynamic>
 			<isEqual property="group" compareValue="all">
-			(MESSAGE_NO IN (SELECT MESSAGE_NO	<!-- 받은 쪽지 -->		
+			(((MESSAGE_NO IN (SELECT MESSAGE_NO	<!-- 받은 쪽지 -->		
                             FROM SEMI_MESSAGE_RECEIVERS
                             WHERE EMP_NO = #empNo# <!-- #empNo# -->
                             AND MESSAGE_DELETED = 'N') OR
              MESSAGE_NO IN (SELECT MESSAGE_NO
                             FROM SEMI_MESSAGE_DEPARTMENTS
-                            WHERE DEPARTMENT_NO = #deptNo#) <!-- #deptNo# -->
+                            WHERE DEPARTMENT_NO = #deptNo#))
+             AND MESSAGE_CANCEL = 'N') <!-- #deptNo# -->
     		OR (MESSAGE_SEND_EMP_NO = #empNo# <!-- #empNo# --> <!-- 내게 쓰기를 제외한 보낸 쪽지 -->	
           		AND MESSAGE_SENT_BOX = 'Y'
-          		AND MESSAGE_DELETED = 'N'))                           
+          		AND MESSAGE_DELETED = 'N'))
     		AND MESSAGE_CONTENT LIKE '%' || #keyword# || '%' <!-- #keyword# -->
 			</isEqual>
 			
 			<isEqual property="group" compareValue="receive"> <!-- 내게 쓰기를 제외한 받은 쪽지 -->	
-		    (MESSAGE_NO IN (SELECT MESSAGE_NO
-		                   FROM SEMI_MESSAGE_RECEIVERS
-		                   WHERE EMP_NO = #empNo# <!-- #empNo# -->
-		                   AND MESSAGE_DELETED = 'N') OR
+		    (MESSAGE_NO IN (SELECT M.MESSAGE_NO
+		                   FROM SEMI_MESSAGE_RECEIVERS R, SEMI_MESSAGES M
+		                   WHERE R.EMP_NO = #empNo# <!-- #empNo# -->
+		                   AND R.MESSAGE_DELETED = 'N'
+		                   AND NOT M.MESSAGE_SEND_EMP_NO = #empNo#
+		                   AND R.MESSAGE_NO = M.MESSAGE_NO) OR
 		    MESSAGE_NO IN (SELECT MESSAGE_NO
                            FROM SEMI_MESSAGE_DEPARTMENTS
                            WHERE DEPARTMENT_NO = #deptNo#))
-          	AND NOT MESSAGE_SEND_EMP_NO = #empNo#                                        
+            AND MESSAGE_CANCEL = 'N'               
 		    AND MESSAGE_CONTENT LIKE '%' || #keyword# || '%' <!-- #keyword# -->
 			</isEqual>
 			
@@ -97,28 +100,31 @@
     		WHERE
     		<dynamic>
 	    		<isEqual property="group" compareValue="all">
-	            (MESSAGE_NO IN (SELECT MESSAGE_NO
+	            (((MESSAGE_NO IN (SELECT MESSAGE_NO
 	                            FROM SEMI_MESSAGE_RECEIVERS
 	                            WHERE EMP_NO = #empNo#
 	                            AND MESSAGE_DELETED = 'N') OR
 	             MESSAGE_NO IN (SELECT MESSAGE_NO
                             	FROM SEMI_MESSAGE_DEPARTMENTS
-                            	WHERE DEPARTMENT_NO = #deptNo#)
+                            	WHERE DEPARTMENT_NO = #deptNo#))
+                 AND MESSAGE_CANCEL = 'N')
 	            OR (MESSAGE_SEND_EMP_NO = #empNo#
 	            	AND MESSAGE_SENT_BOX = 'Y'
-	                AND MESSAGE_DELETED = 'N'))                           
+	                AND MESSAGE_DELETED = 'N')) 
 	            AND MESSAGE_CONTENT LIKE '%' || #keyword# || '%'
 	    		</isEqual>
 	    		
 	    		<isEqual property="group" compareValue="receive">
-	    		(MESSAGE_NO IN (SELECT MESSAGE_NO
-	                           FROM SEMI_MESSAGE_RECEIVERS
-	                           WHERE EMP_NO = #empNo#
-	                           AND MESSAGE_DELETED = 'N') OR
+	    		(MESSAGE_NO IN (SELECT M.MESSAGE_NO
+	                           FROM SEMI_MESSAGE_RECEIVERS R, SEMI_MESSAGES M
+	                           WHERE R.EMP_NO = #empNo#
+	                           AND R.MESSAGE_DELETED = 'N'
+	                           AND NOT M.MESSAGE_SEND_EMP_NO = #empNo#
+	                           AND R.MESSAGE_NO = M.MESSAGE_NO) OR
 	            MESSAGE_NO IN (SELECT MESSAGE_NO
                                FROM SEMI_MESSAGE_DEPARTMENTS
                                WHERE DEPARTMENT_NO = #deptNo#))
-	            AND NOT MESSAGE_SEND_EMP_NO = #empNo#                            
+                AND MESSAGE_CANCEL = 'N'               
 	            AND MESSAGE_CONTENT LIKE '%' || #keyword# || '%'
 	    		</isEqual>
 	    		
@@ -229,6 +235,26 @@
 		UPDATE SEMI_MESSAGES 
 		SET MESSAGE_DELETED = 'Y', MESSAGE_DELETED_DATE = SYSDATE
 		WHERE MESSAGE_SEND_EMP_NO = #value#
+	</update>
+	
+	<update id="cancelMessage" parameterClass="com.semi.message.dto.MessageDeleteDto">
+		UPDATE SEMI_MESSAGES
+		SET MESSAGE_CANCEL = 'Y'
+		WHERE
+    		MESSAGE_SEND_EMP_NO = #empNo#
+    		AND MESSAGE_NO = #messageNo#
+    		AND MESSAGE_READING = 'N'
+	</update>
+	
+	<update id="readMessageDateUpdate" parameterClass="int">
+		UPDATE SEMI_MESSAGE_RECEIVERS
+		SET MESSAGE_RECEIVE_DATE = SYSDATE
+		WHERE MESSAGE_NO = #value#
+	</update>
+	<update id="readMessageisReadUpdate" parameterClass="int">	
+		UPDATE SEMI_MESSAGES
+		SET MESSAGE_READING = 'Y'
+		WHERE MESSAGE_NO = #value#
 	</update>
 </sqlMap>
 

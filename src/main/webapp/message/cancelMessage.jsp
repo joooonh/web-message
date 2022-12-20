@@ -4,10 +4,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ include file="../logincheck.jsp" %>
 <%
+	int empNo = loginEmployee.getNo();
 	int messageNo = StringUtils.stringToInt(request.getParameter("messageNo"));
-
-	MessageDao messageDao = MessageDao.getInstance();
-	messageDao.readMessage(messageNo);
 	
-	out.write("success");
+	MessageDeleteDto messageDeleteDto = new MessageDeleteDto();
+	messageDeleteDto.setEmpNo(empNo);
+	messageDeleteDto.setMessageNo(messageNo);
+	
+	MessageDao messageDao = MessageDao.getInstance();
+	messageDao.cancelMessage(messageDeleteDto);
 %>

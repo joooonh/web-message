@@ -76,5 +76,21 @@ public class MessageDao {
 	public void clearSendMessage(int empNo) {
 		SqlMapper.update("messages.clearSendMessage", empNo);
 	}
+	
+	public void cancelMessage(MessageDeleteDto messageDeleteDto) {
+		SqlMapper.update("messages.cancelMessage", messageDeleteDto);
+	}
+	
+	public void readMessageDateUpdate(int messageNo) {
+		SqlMapper.update("messages.readMessageDateUpdate", messageNo);
+	}
+	public void readMessageisReadUpdate(int messageNo) {
+		SqlMapper.update("messages.readMessageisReadUpdate", messageNo);
+	}
+	
+	public void readMessage(int messageNo) {
+		SqlMapper.update("messages.readMessageDateUpdate", messageNo);
+		SqlMapper.update("messages.readMessageisReadUpdate", messageNo);
+	}
 }
 	

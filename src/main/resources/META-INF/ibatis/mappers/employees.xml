@@ -101,7 +101,8 @@
 		from
 			semi_employees
 		where
-			emp_no = #value#
+			emp_deleted = 'N'
+		  and emp_no = #value#
 	</select>
 	
 	<select id="getAllEmployees" resultClass="com.semi.admin.vo.Employee">
