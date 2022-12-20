@@ -37,5 +37,35 @@
 			(#type#, #tel#, #defaultYN#, #bookNo#)
 	</insert>
 	
+	<select id="getContactByAddressBookNo" parameterClass="int" resultClass="com.semi.address.vo.Contact">
+		select 
+			contact_type		as type,
+			contact_tel			as tel,
+			contact_default_yn	as defaultYN,
+			addr_book_no		as bookNo
+		from
+			semi_address_contacts
+		where
+			addr_book_no = #value#
+	</select>
+	
+	<update id="updateAddressContact" parameterClass="com.semi.address.vo.Contact">
+		update
+			semi_address_contacts
+		set
+			contact_type = #type#,
+			contact_tel = #tel#,
+			contact_default_yn = #defaultYN#
+		where
+			addr_book_no = #bookNo#
+	</update>
+	
+	<delete id="deleteContactByBookNo" parameterClass="int">
+		delete from
+			semi_address_contacts
+		where
+			addr_book_no = #value#
+	</delete>
+	
 </sqlMap>
 

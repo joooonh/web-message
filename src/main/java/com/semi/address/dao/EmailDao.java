@@ -24,4 +24,12 @@ public class EmailDao {
 	public void insertEmail(Email email) {
 		SqlMapper.insert("emails.insertEmail", email);
 	}
+	
+	public void updateAddressEmail(Email email) {
+		SqlMapper.update("emails.updateAddressEmail", email);
+	}
+	
+	public void deleteByBookNo(int bookNo) {
+		SqlMapper.delete("emails.deleteByBookNo", bookNo);
+	}
 }

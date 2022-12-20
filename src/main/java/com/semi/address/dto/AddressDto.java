@@ -27,7 +27,7 @@ public class AddressDto {
 	private String contactType;		//  address_contacts
 	private String tel;				//	address_contacts
 	private String contactDefult;	//  address_contacts
-	private String email;			//	address_emails
+	private String addr;			//	address_emails
 	private String emailDefault;	//  address_emails
 	
 	public int getBookNo() {
@@ -168,11 +168,11 @@ public class AddressDto {
 	public void setContactDefult(String contactDefult) {
 		this.contactDefult = contactDefult;
 	}
-	public String getEmail() {
-		return email;
+	public String getAddr() {
+		return addr;
 	}
-	public void setEmail(String email) {
-		this.email = email;
+	public void setAddr(String addr) {
+		this.addr = addr;
 	}
 	public String getEmailDefault() {
 		return emailDefault;

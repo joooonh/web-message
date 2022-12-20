@@ -8,10 +8,11 @@ MESSAGE_DELETED			CHAR(1 BYTE)	Yes					4	메세지 삭제여부
 
 import java.util.Date;
 
-public class MessageReceivers {
+public class MessageReceiver {
 
 	private int messageNo;
-	private int messageReceiveEmpNo;
+	private int empNo;
+	private String empName;
 	private Date messageReceiveDate;
 	private String messageDeleted;
 	
@@ -23,14 +24,22 @@ public class MessageReceivers {
 		this.messageNo = messageNo;
 	}
 	
-	public int getMessageReceiveEmpNo() {
-		return messageReceiveEmpNo;
+	public int getEmpNo() {
+		return empNo;
 	}
 	
-	public void setMessageReceiveEmpNo(int empNo) {
-		this.messageReceiveEmpNo = empNo;
+	public void setEmpNo(int empNo) {
+		this.empNo = empNo;
 	}
 	
+	public String getEmpName() {
+		return empName;
+	}
+
+	public void setEmpName(String empName) {
+		this.empName = empName;
+	}
+
 	public Date getMessageReceiveDate() {
 		return messageReceiveDate;
 	}

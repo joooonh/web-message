@@ -35,5 +35,21 @@
 			(#addr#, #defaultYN#, #bookNo#)
 	</insert>
 	
+	<update id="updateAddressEmail" parameterClass="com.semi.address.vo.Email">
+		update
+			semi_address_emails
+		set
+			email_addr = #addr#,
+			email_default_yn = #defaultYN#
+		where
+			addr_book_no = #bookNo#
+	</update>
+	
+	<delete id="deleteByBookNo" parameterClass="int">
+		delete from
+			semi_address_emails
+		where
+			addr_book_no = #value#
+	</delete>
 </sqlMap>
 

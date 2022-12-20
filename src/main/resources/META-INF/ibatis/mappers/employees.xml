@@ -4,6 +4,13 @@
  
 <sqlMap namespace="employees">
 
+	<select id="getTotalRows" parameterClass="map" resultClass="int">
+		select
+			count(*)
+		from
+			semi_employees
+	</select>
+	
 	<insert id="insertEmployee" parameterClass="com.semi.admin.vo.Employee">
 		insert into semi_employees
 			(emp_no, emp_password, emp_name, emp_email, emp_phone, emp_dept_no, emp_position_no, emp_type)
@@ -26,7 +33,7 @@
 			E.emp_deleted_date as deletedDate,
 			E.emp_type as type,
 			D.department_name as departmentName,
-			P.positon_name as positionName,
+			P.position_name as positionName,
 			P.position_seq as positionSeq
 		from
 			(select 
@@ -38,18 +45,20 @@
 				emp_phone,
 				emp_dept_no,
 				emp_position_no,
-				emp_delted,
+				emp_deleted,
 				emp_created_date,
 				emp_updated_date,
 				emp_deleted_date,
 				emp_type
 			from
 				semi_employees
-				) E, semi_department D, semi_position P
+				) E, semi_departments D, semi_positions P
 			where
 				E.emp_dept_no = D.department_no
 				and E.emp_position_no = P.position_no
 				and row_numbers between #begin# and #end#
+			order by
+				E.emp_no desc
 	</select>
 	
 	<select id="getEmployeeByEmail" parameterClass="String" resultClass="com.semi.admin.vo.Employee">
@@ -70,6 +79,7 @@
 		from
 			semi_employees
 		where
+			emp_no = #value#
 			emp_email = #value#
 	</select>
 	
@@ -115,13 +125,8 @@
 			semi_employees
 		where
 			emp_deleted = 'Y'
-	</select>
-	
-	<select id="getTotalRows" resultClass="int">
-		select
-			count(*)
-		from
-			semi_employees
+	 	order by 
+	 		emp_no desc
 	</select>
 	
 	<!--  

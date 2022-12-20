@@ -69,29 +69,29 @@
 				addr_updated_date	as updatedDate,
 				addr_deleted_date	as deletedDate,
 				emp_no				as empNo
-			  from
-			  	semi_address_books
-		  	  where
-		  	  	addr_deleted = 'N'
-	  	  	  	<dynamic>
-	  	  	  		<isNotNull property="keyword">
-	  	  	  			and (addr_first_name like '%' || #keyword# || '%'
-	  	  	  			     or addr_last_name like '%' || #keyword# || '%'
-	  	  	  			     or addr_company like '%' || #keyword# || '%'
-	  	  	  			     or addr_dept like '%' || #keyword# || '%'
-	  	  	  			     or addr_position like '%' || #keyword# || '%'
-	  	  	  			     or addr_book_no in (select addr_book_no 
-	  	  	  			                        from semi_address_contacts
-	  	  	  			                        <isNotNull property="keyword">
-	  	  	  			                        	where contact_tel like '%' || #keyword# || '%' 
-  	  	  										</isNotNull>)
-							 or addr_book_no in(select addr_book_no
-							 					from semi_address_emails
-							 					<isNotNull property="keyword">
-							 						where email_addr like '%' || #keyword# || '%'
-							 					</isNotNull>))
-	  	  	  		</isNotNull>
-	  	  	  	</dynamic>)
+			from
+			  semi_address_books
+		  where
+        addr_deleted = 'N'
+          <dynamic>
+            <isNotNull property="keyword">
+              and (addr_first_name like '%' || #keyword# || '%'
+                   or addr_last_name like '%' || #keyword# || '%'
+                   or addr_company like '%' || #keyword# || '%'
+                   or addr_dept like '%' || #keyword# || '%'
+                   or addr_position like '%' || #keyword# || '%'
+                   or addr_book_no in (select addr_book_no 
+                                      from semi_address_contacts
+                                      <isNotNull property="keyword">
+                                        where contact_tel like '%' || #keyword# || '%' 
+                                      </isNotNull>)
+                   or addr_book_no in(select addr_book_no
+                            from semi_address_emails
+                            <isNotNull property="keyword">
+                              where email_addr like '%' || #keyword# || '%'
+                            </isNotNull>))
+            </isNotNull>
+          </dynamic>)
 		where
 			rowNumber between #begin# and #end#
 		and 

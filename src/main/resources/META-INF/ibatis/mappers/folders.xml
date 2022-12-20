@@ -4,5 +4,27 @@
 
 <sqlMap namespace="folders">
 
+<select id="getFolderByNo" parameterClass="int" resultClass="com.semi.memo.vo.Folder">
+		select
+			memo_folder_no		as folderNo,
+			memo_folder_name	as folderName,
+			memo_folder_seq		as folderSeq
+		from
+			semi_memo_folders
+		where
+			memo_folder_no = #value#
+	</select>
+	
+	<!-- <update id="updateFolderByNo" parameterClass="com.semi.memo.vo.Folder">
+		update
+			semi_memo_folders
+		set
+			memo_folder_no = #folderNo#,
+			memo_folder_name = #folderName#,
+			memo_folder_seq = #folderSeq#
+		where
+			memo_folder_no = #value#
+	</update> -->
+
 </sqlMap>
  
