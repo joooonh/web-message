@@ -21,6 +21,10 @@
 		String messageType = StringUtils.nullToValue(request.getParameter("type"), "E");
 		String messageContent = request.getParameter("content");
 		
+		if (receiverNo == loginEmpNo) {
+			messageMe = "Y";
+		}
+		
 		Message message = new Message();
 		message.setMessageNo(messageNo);
 		message.setMessageSendEmpNo(loginEmpNo);

@@ -8,6 +8,4 @@
 
 	MessageDao messageDao = MessageDao.getInstance();
 	messageDao.readMessage(messageNo);
-	
-	out.write("success");
 %>

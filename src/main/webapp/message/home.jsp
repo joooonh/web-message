@@ -207,7 +207,7 @@
 									<td>개인 쪽지</td>
 									<td data-empno="<%=senderNo %>"><%=senderNo == loginEmpNo ? "나" : senderName%></td> <!-- 수신 메세지의 보낸 사람 -->
 									<td><%=receiverEmpNo == loginEmpNo ? "나" : receiverEmpName %></td> <!-- 발신 메세지의 받는 사람 -->
-									<td><%=message.getMessageContent()%></td>
+									<td><span class="d-inline-block text-truncate" style="max-width: 250px"><%=message.getMessageContent()%></span></td>
 									<td><%=sendDate %></td>
 									<td><%=receiveDate.isEmpty() ? "미수신" : receiveDate %></td>
 								</tr>								
@@ -223,7 +223,7 @@
 									<td>부서 쪽지</td>
 									<td data-empno="<%=senderNo%>"><%=senderNo == loginEmpNo ? "나" : senderName%></td> <!-- 수신 메세지의 보낸 사람 -->
 									<td><%=receiverDeptName%></td> <!-- 발신 메세지의 받는 사람 -->
-									<td><%=message.getMessageContent()%></td>
+									<td><span class="d-inline-block text-truncate" style="max-width: 250px"><%=message.getMessageContent()%></span></td>
 									<td><%=sendDate %></td>
 									<td>-</td>
 								</tr>								
@@ -268,15 +268,15 @@
 								String messageType = message.getMessageType();
 								String messageContent = message.getMessageContent();
 								String sendDate = StringUtils.dateToText(message.getMessageSendDate());
-								Employee employee = employeeDao.getEmployeeByNo(message.getMessageSendEmpNo());
-								String senderName = employee.getName();
 								int senderNo = message.getMessageSendEmpNo();
+								Employee employee = employeeDao.getEmployeeByNo(senderNo);
+								String senderName = employee.getName();
 %>
 									<tr>
 										<td class="text-center"><input type="checkbox" name="messageNo" value="<%=messageNo%>" /></td>
 										<td><%="E".equals(messageType) ? "개인 쪽지" : "부서 쪽지" %></td>
-										<td data-empname="<%=senderName %>"><%=senderNo == loginEmpNo ? "나" : senderName %></td>
-										<td data-content="<%=messageContent %>" class="btn btn-link"><%=messageContent %></td>
+										<td data-empno="<%=senderNo %>" data-empname="<%=senderName %>"><%=senderNo == loginEmpNo ? "나" : senderName %></td>
+										<td data-content="<%=messageContent %>" class="btn btn-link"><span class="d-inline-block text-truncate" style="max-width: 250px"><%=messageContent %></span></td>
 										<td data-send-date="<%=sendDate %>"><%=sendDate %></td>
 									</tr>
 							</tbody>
@@ -316,7 +316,7 @@
 								<tr>
 									<td class="text-center"><input type="checkbox" name="messageNo" value=<%=messageNo%> /></td>
 									<td data-empno="<%=message.getMessageSendEmpNo()%>">나</td>
-									<td><%=message.getMessageContent()%></td>
+									<td><span class="d-inline-block text-truncate" style="max-width: 250px"><%=message.getMessageContent()%></span></td>
 									<td><%=StringUtils.dateToText(message.getMessageSendDate())%></td>
 								</tr>
 							</tbody>
@@ -369,7 +369,7 @@
 									<td class="text-center"><input type="checkbox" name="messageNo" value="<%=messageNo %>" /></td>
 									<td>개인 쪽지</td>
 									<td data-empno="<%=messageReceiver.getEmpNo() %>"><%=messageReceiver.getEmpName() %></td>
-									<td><%=message.getMessageContent() %> </td>
+									<td><span class="d-inline-block text-truncate" style="max-width: 250px"><%=message.getMessageContent() %></span></td>
 									<td><%=sendDate %></td>
 <%
 									if (!isRead) {
@@ -395,7 +395,7 @@
 									<td class="text-center"><input type="checkbox" name="messageNo" value=<%=messageNo %> /></td>
 									<td>부서 쪽지</td>
 									<td data-empno="<%=messageDepartment.getDeptNo() %>"><%=messageDepartment.getDeptName() %></td>
-									<td><%=message.getMessageContent() %></td>
+									<td><span class="d-inline-block text-truncate" style="max-width: 250px"><%=message.getMessageContent() %></span></td>
 									<td><%=sendDate %></td>
 									<td>
 										<button type="button" id="btn-cancel" class="btn btn-xs btn btn-dark ms-2"
@@ -601,6 +601,9 @@
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
+				<form method="post" action="send.jsp">
+					<input type="hidden" name="receiverNo" value="">
+					<input type="hidden" name="sentBox" value="Y">
 					<div class="row mb-2">
 						<label class="col-sm-2 col-form-label col-form-label-sm"><strong>받은 날짜</strong></label>
 						<div class="col-sm-8">
@@ -626,8 +629,9 @@
 					</div>	
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
-						<button type="button" class="btn btn-primary btn-sm">답장하기</button>
+						<button type="submit" class="btn btn-primary btn-sm">답장하기</button>
 					</div>
+				</form>
 			</div>
 		</div>
 	</div>
@@ -670,22 +674,28 @@ $(function() {
 	$("#select-form tbody .btn-link").click(function() {
 		var $parent = $(this).parent()
 		
+		var empNo = $parent.children("[data-empno]").attr("data-empno")
 		var sendDate = $parent.children("[data-send-date]").attr("data-send-date")
 		var empName = $parent.children("[data-empname]").attr("data-empname")
 		var content = $parent.children("[data-content]").attr("data-content")
 		var messageNo = $parent.children().eq(0).children().val()
-			console.log(messageNo)
 		
+		$("#modal-form-detail [name=receiverNo]").val(empNo)
 		$("#modal-form-detail p").eq(0).text(sendDate)
 		$("#modal-form-detail p").eq(1).text(empName)
 		$("#modal-form-detail p").eq(2).text(content)
 		
-		$.get("readMessage.jsp", {messageNo : messageNo}, function(response) {
-			console.log(response)
-		})
+		$.get("readMessage.jsp", {messageNo : messageNo}, function() {})
 		
 		modalFormDetail.show();
-		
+	})
+	
+	$("#modal-form-detail form").submit(function () {
+		var content = $("#modal-form-detail [name=content]").val()
+		if (content == "") {
+			alert("쪽지 내용을 입력하세요")
+			return false
+		}
 	})
 	
 	$("#modal-form-message").on('hidden.bs.modal', function() {
