@@ -49,16 +49,10 @@
 	int currentPage = StringUtils.stringToInt(request.getParameter("page"), 1);
 	String opt = StringUtils.nullToBlank(request.getParameter("opt"));
 	String keyword = StringUtils.nullToBlank(request.getParameter("keyword"));
-
-	// 전체 페이지
-	BookDao bookDao = BookDao.getInstance();
-	int totalRows = bookDao.getTotalRows(empNo); 
+	int rows = StringUtils.stringToInt(request.getParameter("rows"), 10);
 	
 	ContactDao contactDao = ContactDao.getInstance();
 	EmailDao emailDao = EmailDao.getInstance();
-	
-	// 10행 5페이지씩
-	Pagination pagination = new Pagination(currentPage, totalRows);
 	
 	Map<String, Object> param = new HashMap<>(); 
 	if (!opt.isEmpty()){
@@ -69,9 +63,17 @@
 	} 
 	param.put("empNo", empNo);
 	
+	// 전체 페이지
+	BookDao bookDao = BookDao.getInstance();
+	int totalRows = bookDao.getTotalRows(param); 
+	
+	// 10행 5페이지씩
+	Pagination pagination = new Pagination(currentPage, totalRows, rows);
+	
 	param.put("begin", pagination.getBegin()); 
 	param.put("end", pagination.getEnd()); 
 	
+	// 전체 주소록 목록 조회
 	List<Book> bookList = bookDao.getBooks(param); 
 	
 	AddressGroupDao addGroupDao = new AddressGroupDao();
@@ -149,15 +151,12 @@
 		<div class="col-10">
 			<div class="row mb-2">
 				<div class="col d-flex justify-content-between me-2">
-					<form id="deliverForm" class="row row-cols-lg-auto align-items-center me-3">
-						<input type="hidden" name="opt" value="<%=opt %>">
-						<input type="hidden" name="page" value="<%=currentPage %>">
-					
+					<form id="deliverForm" class="row row-cols-lg-auto align-items-center me-3" method="get" action="home.jsp">
 						<div class="col-12">
 							<input type="text" class="form-control form-control-sm" name="keyword" value="<%=keyword %>" placeholder="연락처 검색"/>
 						</div>
 						<div class="col-12">
-							<button type="button" class="btn btn-sm btn-outline-secondary" id="btn-search-keyword">검색</button>
+							<button type="submit" class="btn btn-sm btn-outline-secondary" id="btn-search-keyword">검색</button>
 						</div>
 						<small>
 							<strong>내 주소록</strong> | <strong class="text-success"><%=totalRows %></strong>
@@ -260,7 +259,7 @@
 						<ul class="pagination pagination-sm justify-content-center">
 							<li class="page-item">
 								<a class="page-link <%=pagination.isFirst() ? "disabled" : "" %>"
-									href="home.jsp?page=<%=pagination.getPrevPage() %>"
+									href="home.jsp?page=<%=pagination.getPrevPage() %>&keyword=<%=keyword %>"
 									onclick="changePage(event, <%=pagination.getPrevPage() %>)" >이전</a>
 							</li>
 <%
@@ -268,7 +267,7 @@
 %>
 							<li class="page-item">
 								<a class="page-link <%=currentPage == number ? "active" : "" %>" 
-									href="home.jsp?page=<%=number%>"
+									href="home.jsp?page=<%=number%>&keyword=<%=keyword %>"
 									onclick="changePage(event, <%=number%>)"><%=number %></a>
 							</li>
 <% 
@@ -276,7 +275,7 @@
 %>
 							<li class="page-item">
 								<a class="page-link <%=pagination.isLast() ? "disabled" : "" %>"
-									href="home.jsp?page=<%=pagination.getNextPage() %>"
+									href="home.jsp?page=<%=pagination.getNextPage() %>&keyword=<%=keyword %>"
 									onclick="changePage(event, <%=pagination.getNextPage() %>)" >다음</a>
 							</li>
 						</ul>
@@ -1056,6 +1055,20 @@ $(function(){
 		$("#deliverForm").trigger("submit")
 	})
 	
+	// 페이지 번호 클릭했을때 발생하는 이벤트
+	function changePage(event,page) {
+		event.preventDefault();
+		submitForm(page);
+	}
+	
+	// form 태그 전송
+	function submitForm(page) {
+		$("input[name=page]").val(page);
+		
+		$("#deliverForm").submit();
+	};
+
+	
 // 그룹 이동
 	$("#btn-move-addr").click(function () {
 		var groupNo = $("#select-groups").val()
@@ -1107,19 +1120,6 @@ $(function(){
 		location.href = "completeDeleteAddress.jsp?addressBookNo="+addressBookNo;
 	});
 	
-	// 페이지 번호 클릭했을때 발생하는 이벤트
-	function changePage(event,page) {
-		event.preventDefault();
-		submitForm(page);
-	}
-	
-	// form 태그 전송
-	function submitForm(page) {
-		$("input[name=page]").val(page);
-		
-		$("#deliverForm").submit();
-	};
-
 	// 휴지통 클릭했을 때 이벤트
 	$("#wastebasket").click(function(){
 		var employeeNo = $(this).attr("data-employee-no");

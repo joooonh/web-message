@@ -18,12 +18,12 @@ public class BookDao {
 		return (Integer) SqlMapper.selectOne("books.getSequence");
 	}
 	
-	public int getTotalRows(int empNo) {
-		return (Integer) SqlMapper.selectOne("books.getTotalRows", empNo);
+	public int getTotalRows(Map<String, Object> param) {
+		return (Integer) SqlMapper.selectOne("books.getTotalRows", param);
 	}
 	
-	public int getTotalImportantRows(int empNo) {
-		return (Integer) SqlMapper.selectOne("books.getTotalImportantRows", empNo);
+	public int getTotalImportantRows(Map<String, Object> param) {
+		return (Integer) SqlMapper.selectOne("books.getTotalImportantRows", param);
 	}
 	
 	public int getTotalRowsByGroupNo(Map<String, Object> map) {

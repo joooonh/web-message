@@ -48,15 +48,8 @@
 	String opt = StringUtils.nullToBlank(request.getParameter("opt"));
 	String keyword = StringUtils.nullToBlank(request.getParameter("keyword"));
 
-	// 전체 페이지 (이름 기준)
-	BookDao bookDao = BookDao.getInstance();
-	int totalImportantRows = bookDao.getTotalImportantRows(empNo); 
-	
 	ContactDao contactDao = ContactDao.getInstance();
 	EmailDao emailDao = EmailDao.getInstance();
-	
-	// 10행 5페이지씩
-	Pagination pagination = new Pagination(currentPage, totalImportantRows);
 	
 	Map<String, Object> param = new HashMap<>(); 
 	if (!opt.isEmpty()){
@@ -66,6 +59,13 @@
 		param.put("keyword", keyword);
 	} 
 	param.put("empNo", loginEmployee.getNo());
+	
+	// 전체 페이지
+	BookDao bookDao = BookDao.getInstance();
+	int totalImportantRows = bookDao.getTotalImportantRows(param); 
+	
+	// 10행 5페이지씩
+	Pagination pagination = new Pagination(currentPage, totalImportantRows);
 	
 	param.put("begin", pagination.getBegin()); 
 	param.put("end", pagination.getEnd()); 
@@ -134,18 +134,15 @@
 		<div class="col-10">
 			<div class="row mb-2">
 				<div class="col d-flex justify-content-between me-2">
-					<form id="deliverForm" class="row row-cols-lg-auto align-items-center me-3">
-						<input type="hidden" name="opt" value="<%=opt %>">
-						<input type="hidden" name="page" value="<%=currentPage %>">
-					
+					<form id="deliverForm" class="row row-cols-lg-auto align-items-center me-3" method="get" action="important.jsp">
 						<div class="col-12">
-							<input type="text" class="form-control form-control-sm" name="keyword" placeholder="연락처 검색"/>
+							<input type="text" class="form-control form-control-sm" name="keyword" value="<%=keyword %>" placeholder="연락처 검색"/>
 						</div>
 						<div class="col-12">
-							<button type="button" onclick="submitForm(1);" class="btn btn-sm btn-outline-secondary">검색</button>
+							<button type="submit" class="btn btn-sm btn-outline-secondary" id="btn-search-keyword">검색</button>
 						</div>
 						<small>
-							<strong>중요 주소록</strong> | <strong class="text-success"><%=totalImportantRows %></strong>
+							<strong>내 주소록</strong> | <strong class="text-success"><%=totalImportantRows %></strong>
 						</small>
 					</form>
 				</div>
@@ -244,7 +241,7 @@
 						<ul class="pagination pagination-sm justify-content-center">
 							<li class="page-item">
 								<a class="page-link <%=pagination.isFirst() ? "disabled" : "" %>"
-									href="home.jsp?page=<%=pagination.getPrevPage() %>"
+									href="important.jsp?page=<%=pagination.getPrevPage() %>&keyword=<%=keyword %>"
 									onclick="changePage(event, <%=pagination.getPrevPage() %>)" >이전</a>
 							</li>
 <%
@@ -252,7 +249,7 @@
 %>
 							<li class="page-item">
 								<a class="page-link <%=currentPage == number ? "active" : "" %>" 
-									href="home.jsp?page=<%=number%>"
+									href="important.jsp?page=<%=number%>&keyword=<%=keyword %>"
 									onclick="changePage(event, <%=number%>)"><%=number %></a>
 							</li>
 <% 
@@ -260,7 +257,7 @@
 %>
 							<li class="page-item">
 								<a class="page-link <%=pagination.isLast() ? "disabled" : "" %>"
-									href="home.jsp?page=<%=pagination.getNextPage() %>"
+									href="important.jsp?page=<%=pagination.getNextPage() %>&keyword=<%=keyword %>"
 									onclick="changePage(event, <%=pagination.getNextPage() %>)" >다음</a>
 							</li>
 						</ul>
@@ -677,11 +674,7 @@ $(function(){
 				
 			})
 		}
-		
-		//important = (important == "Y" ? "N" : "Y");
-		//location.href= "important.jsp?bookNo=" + bookNo + "&important=" + important;
 	})
-	
 	
 	// 전체 체크박스 클릭시 모든 체크박스 체크 표시 
 	$("#checkbox-all").change(function(){
@@ -1076,6 +1069,12 @@ $(function(){
 		// 삭제할 주소록을 deleteAddress.jsp에 보낸다.
 		location.href = "deleteAddress.jsp?addressBookNo="+addressBookNo;
 	});
+	
+	// 검색버튼 클릭했을 때 실행되는 이벤트 핸들러 함수
+	$("#btn-search-keyword").click(function() {
+		$(":input[name=page]").val(1);
+		$("#deliverForm").trigger("submit")
+	})
 	
 	// 페이지 번호 클릭했을때 발생하는 이벤트
 	function changePage(event,page) {
