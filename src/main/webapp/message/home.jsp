@@ -14,7 +14,6 @@
 <%@page import="com.semi.util.StringUtils"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!-- logincheck.jsp 삽입 필요 -->
 <%@ include file="../logincheck.jsp" %>
 
 <!DOCTYPE html>
@@ -32,16 +31,18 @@
 	<jsp:param name="menu" value="home"/>
 </jsp:include>
 <%
-	int empNo = 1000;	// logincheck.jsp로부터 가져와야 하는 값, employee.getNo();
-	int deptNo = 105;	// logincheck.jsp로부터 가져와야 하는 값, employee.getDeptNo();
+	int loginEmpNo = loginEmployee.getNo();	// logincheck.jsp로부터 가져와야 하는 값, employee.getNo();
+	int loginDeptNo = loginEmployee.getDeptNo();	// logincheck.jsp로부터 가져와야 하는 값, employee.getDeptNo();
+	String loginEmpName = loginEmployee.getName();
+	
 	String group = StringUtils.nullToValue(request.getParameter("group"), "receive");
 	String keyword = StringUtils.nullToBlank(request.getParameter("keyword"));
 	int currentPage = StringUtils.stringToInt(request.getParameter("pageNo"), 1);
 	int rows = StringUtils.stringToInt(request.getParameter("rows"), 10);
 	
 	Map<String, Object> param = new HashMap<>();
-	param.put("empNo", empNo);
-	param.put("deptNo", deptNo);
+	param.put("empNo", loginEmpNo);
+	param.put("deptNo", loginDeptNo);
 	param.put("keyword", keyword);
 	param.put("group", group);
 	
@@ -107,7 +108,6 @@
 					<!------------------------------------------------------ 검색 폼 시작 ------------------------------------------------------>
 					<form class="row row-cols-lg-auto align-items-center me-3" method="post" action="home.jsp" id="search-form">
 						<div class="col-12">
-							<input type="hidden" name="userEmpNo" value="<%=loginEmployee.getNo() %>">
 							<input type="hidden" name="pageNo" value="<%=currentPage %>">
 							<select class="form-select form-select-sm" name="group">
 								<option value="all" <%="all".equals(group) ? "selected" : "" %>> 전체쪽지</option>
@@ -205,9 +205,9 @@
 								<tr>
 									<td class="text-center"><input type="checkbox" name="messageNo" value=<%=messageNo%> /></td>
 									<td>개인 쪽지</td>
-									<td data-empno="<%=senderNo %>"><%=senderNo == empNo ? "나" : senderName%></td> <!-- 수신 메세지의 보낸 사람 -->
-									<td><%=receiverEmpNo == empNo ? "나" : receiverEmpName %></td> <!-- 발신 메세지의 받는 사람 -->
-									<td><%=message.getMessageContent()%></td>
+									<td data-empno="<%=senderNo %>"><%=senderNo == loginEmpNo ? "나" : senderName%></td> <!-- 수신 메세지의 보낸 사람 -->
+									<td><%=receiverEmpNo == loginEmpNo ? "나" : receiverEmpName %></td> <!-- 발신 메세지의 받는 사람 -->
+									<td><span class="d-inline-block text-truncate" style="max-width: 250px"><%=message.getMessageContent()%></span></td>
 									<td><%=sendDate %></td>
 									<td><%=receiveDate.isEmpty() ? "미수신" : receiveDate %></td>
 								</tr>								
@@ -221,9 +221,9 @@
 								<tr>
 									<td class="text-center"><input type="checkbox" name="messageNo" value=<%=messageNo%> /></td>
 									<td>부서 쪽지</td>
-									<td data-empno="<%=senderNo%>"><%=senderNo == empNo ? "나" : senderName%></td> <!-- 수신 메세지의 보낸 사람 -->
-									<td><%=receiverDeptNo == deptNo ? "내 소속부서" : receiverDeptName%></td> <!-- 발신 메세지의 받는 사람 -->
-									<td><%=message.getMessageContent()%></td>
+									<td data-empno="<%=senderNo%>"><%=senderNo == loginEmpNo ? "나" : senderName%></td> <!-- 수신 메세지의 보낸 사람 -->
+									<td><%=receiverDeptName%></td> <!-- 발신 메세지의 받는 사람 -->
+									<td><span class="d-inline-block text-truncate" style="max-width: 250px"><%=message.getMessageContent()%></span></td>
 									<td><%=sendDate %></td>
 									<td>-</td>
 								</tr>								
@@ -265,15 +265,19 @@
 							}
 							for (Message message : messageList) {
 								int messageNo = message.getMessageNo();
-								Employee employee = employeeDao.getEmployeeByNo(message.getMessageSendEmpNo());
 								String messageType = message.getMessageType();
+								String messageContent = message.getMessageContent();
+								String sendDate = StringUtils.dateToText(message.getMessageSendDate());
+								int senderNo = message.getMessageSendEmpNo();
+								Employee employee = employeeDao.getEmployeeByNo(senderNo);
+								String senderName = employee.getName();
 %>
 									<tr>
-										<td class="text-center"><input type="checkbox" name="messageNo" value=<%=messageNo%> /></td>
+										<td class="text-center"><input type="checkbox" name="messageNo" value="<%=messageNo%>" /></td>
 										<td><%="E".equals(messageType) ? "개인 쪽지" : "부서 쪽지" %></td>
-										<td data-empno="<%=message.getMessageSendEmpNo()%>"><%=employee.getName()%></td>
-										<td><%=message.getMessageContent()%></td>
-										<td><%=StringUtils.dateToText(message.getMessageSendDate())%></td>
+										<td data-empno="<%=senderNo %>" data-empname="<%=senderName %>"><%=senderNo == loginEmpNo ? "나" : senderName %></td>
+										<td data-content="<%=messageContent %>" class="btn btn-link"><span class="d-inline-block text-truncate" style="max-width: 250px"><%=messageContent %></span></td>
+										<td data-send-date="<%=sendDate %>"><%=sendDate %></td>
 									</tr>
 							</tbody>
 <!------------------------------------------------------ 받은 쪽지함 끝 ---------------------------------------------------------->
@@ -312,7 +316,7 @@
 								<tr>
 									<td class="text-center"><input type="checkbox" name="messageNo" value=<%=messageNo%> /></td>
 									<td data-empno="<%=message.getMessageSendEmpNo()%>">나</td>
-									<td><%=message.getMessageContent()%></td>
+									<td><span class="d-inline-block text-truncate" style="max-width: 250px"><%=message.getMessageContent()%></span></td>
 									<td><%=StringUtils.dateToText(message.getMessageSendDate())%></td>
 								</tr>
 							</tbody>
@@ -324,7 +328,7 @@
 						} else if ("send".equals(group)) {
 %>
 							<colgroup>
-								<col width="5%">
+								<col width="3%">
 								<col width="10%">
 								<col width="10%">
 								<col width="*">
@@ -354,18 +358,34 @@
 								int messageNo = message.getMessageNo();
 								String messageType = message.getMessageType();
 								String sendDate = StringUtils.dateToText(message.getMessageSendDate());
+								boolean isCancel = "Y".equals(message.getMessageCancel());
 								
 								if ("E".equals(messageType)) {
 									MessageReceiver messageReceiver = messageDao.getEmpReceiverByMessageNo(messageNo);
+									boolean isRead = "Y".equals(message.getMessageReading());
 									String receiveDate = StringUtils.dateToText(messageReceiver.getMessageReceiveDate());
 %>
 								<tr>
-									<td class="text-center"><input type="checkbox" name="messageNo" value=<%=messageNo %> /></td>
+									<td class="text-center"><input type="checkbox" name="messageNo" value="<%=messageNo %>" /></td>
 									<td>개인 쪽지</td>
 									<td data-empno="<%=messageReceiver.getEmpNo() %>"><%=messageReceiver.getEmpName() %></td>
-									<td><%=message.getMessageContent() %></td>
+									<td><span class="d-inline-block text-truncate" style="max-width: 250px"><%=message.getMessageContent() %></span></td>
 									<td><%=sendDate %></td>
-									<td><%=receiveDate.isEmpty() ? "미수신" : receiveDate %></td>
+<%
+									if (!isRead) {
+%>
+									<td>
+										<button type="button" id="btn-cancel" class="btn btn-xs btn btn-dark ms-2"
+										<%=isCancel ? "disabled" : ""  %>
+										 data-message-no="<%=messageNo %>">발신 취소</button>
+									</td>
+<%
+									} else {
+%>
+									<td><%=receiveDate %></td>
+<%
+									}
+%>
 								</tr>
 <%
 								} else if ("D".equals(messageType)) {
@@ -375,9 +395,13 @@
 									<td class="text-center"><input type="checkbox" name="messageNo" value=<%=messageNo %> /></td>
 									<td>부서 쪽지</td>
 									<td data-empno="<%=messageDepartment.getDeptNo() %>"><%=messageDepartment.getDeptName() %></td>
-									<td><%=message.getMessageContent() %></td>
+									<td><span class="d-inline-block text-truncate" style="max-width: 250px"><%=message.getMessageContent() %></span></td>
 									<td><%=sendDate %></td>
-									<td>-</td>
+									<td>
+										<button type="button" id="btn-cancel" class="btn btn-xs btn btn-dark ms-2"
+										 <%=isCancel ? "disabled" : "" %>
+										 data-message-no="<%=messageNo %>">발신 취소</button>
+									</td>
 								</tr>
 							</tbody>
 <%
@@ -478,12 +502,14 @@
 					<div class="row mb-2">
 						<label class="col-sm-2 col-form-label col-form-label-sm">수신자</label>
 						<div class="col-sm-8">
-							<input type="text" class="form-control form-control-sm" name="name">
-						</div>
-						<div id="hidden-box-receiver">
+							<input type="text" readonly="readonly" class="form-control form-control-sm" name="name" data-login-empname="<%=loginEmployee.getName() %>">
 						</div>
 						<div class="col-sm-2">
 							<button type="button" name="address" class="btn btn-secondary btn-xs mt-0" id="btn-open-receiver-modal">선택하기</button>
+							<div id="hidden-box-receiver" data-login-empno=<%=loginEmpNo %>>
+							<!-- <input type="hidden" name="receiverNo" value="empNo" > -->
+							<!-- <input type="hidden" name="receiverNo" value="deptNo" > -->
+							</div>
 						</div>
 					</div>
 					<div class="row mb-2">
@@ -518,7 +544,7 @@
 				
 					for (Employee employee : empList) {
 %>
-					<li class="list-group-item" id="">
+					<li class="list-group-item">
 						<input class="form-check-input me-1" type="checkbox" name="empNo" value="<%=employee.getNo() %>" data-empname="<%=employee.getName() %>">
 						<label class="form-check-label small"><%=employee.getName() %></label>
 					</li>
@@ -549,7 +575,7 @@
 					for (Department department : deptList) {
 %>
 					<li class="list-group-item">
-						<input class="form-check-input me-1" type="checkbox" name="deptNo" value="<%=department.getNo() %>" >
+						<input class="form-check-input me-1" type="checkbox" name="deptNo" value="<%=department.getNo() %>" data-deptname="<%=department.getName() %>" >
 						<label class="form-check-label small"><%=department.getName() %></label>
 					</li>
 <%		
@@ -565,6 +591,52 @@
 	</div>
 </div>
 <!--------------------------------------------------- 수신자 선택 모달창 끝 --------------------------------------------------->
+
+<!--------------------------------------------------- 쪽지 상세보기 모달창 시작 --------------------------------------------------->
+<div class="modal" tabindex="-1" id="modal-form-detail">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">메세지 상세 보기</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form method="post" action="send.jsp">
+					<input type="hidden" name="receiverNo" value="">
+					<input type="hidden" name="sentBox" value="Y">
+					<div class="row mb-2">
+						<label class="col-sm-2 col-form-label col-form-label-sm"><strong>받은 날짜</strong></label>
+						<div class="col-sm-8">
+							<p>2022년 12월 20일</p>
+						</div>
+					</div>
+					<div class="row mb-2">
+						<label class="col-sm-2 col-form-label col-form-label-sm"><strong>보낸 사람</strong></label>
+						<div class="col-sm-8">
+							<p>이순신</p>
+						</div>
+					</div>
+					<div class="row mb-2">
+						<label class="col-sm-2 col-form-label col-form-label-sm"><strong>내용</strong></label>
+						<div class="col-sm-10">
+							<p>연습 메세지</p>
+						</div>
+					</div>
+					<div class="row mb-2">
+						<div class="col-sm-12">
+							<textarea rows="6" class="form-control" name="content"></textarea>
+						</div>
+					</div>	
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">닫기</button>
+						<button type="submit" class="btn btn-primary btn-sm">답장하기</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<!--------------------------------------------------- 쪽지 상세보기 모달창 끝 --------------------------------------------------->
 
 <!--------------------------------------------------- 쪽지 전체삭제 모달창 시작 --------------------------------------------------->
 <div class="modal" tabindex="-1" id="modal-form-clear">
@@ -596,39 +668,95 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 <script type="text/javascript">
 $(function() {
+
+	var modalFormDetail = new bootstrap.Modal("#modal-form-detail");
 	
-	var checkedCheckboxList = $("#modal-employee-list [nmae=empNo]:checked");
-	var checkedCheckboxLength = checkedCheckboxList.length;
+	$("#select-form tbody .btn-link").click(function() {
+		var $parent = $(this).parent()
+		
+		var empNo = $parent.children("[data-empno]").attr("data-empno")
+		var sendDate = $parent.children("[data-send-date]").attr("data-send-date")
+		var empName = $parent.children("[data-empname]").attr("data-empname")
+		var content = $parent.children("[data-content]").attr("data-content")
+		var messageNo = $parent.children().eq(0).children().val()
+		
+		$("#modal-form-detail [name=receiverNo]").val(empNo)
+		$("#modal-form-detail p").eq(0).text(sendDate)
+		$("#modal-form-detail p").eq(1).text(empName)
+		$("#modal-form-detail p").eq(2).text(content)
+		
+		$.get("readMessage.jsp", {messageNo : messageNo}, function() {})
+		
+		modalFormDetail.show();
+	})
 	
+	$("#modal-form-detail form").submit(function () {
+		var content = $("#modal-form-detail [name=content]").val()
+		if (content == "") {
+			alert("쪽지 내용을 입력하세요")
+			return false
+		}
+	})
+	
+	$("#modal-form-message").on('hidden.bs.modal', function() {
+		$("#hidden-box-receiver").empty()
+		$("#modal-form-message [name=name]").val("");
+	})
 	
 	$("#btn-select-emp").click(function() {
-		console.log(checkedCheckboxList)
-		console.log(checkedCheckboxLength)
+		var checkedCheckboxList = $("#modal-employee-list [name=empNo]:checked");
+		var checkedCheckboxLength = checkedCheckboxList.length;
 		
+		var names = []
 		for (var index = 0; index < checkedCheckboxLength; index++) {
 			var checkedCheckbox = checkedCheckboxList[index];
 			
 			var empNo = $(checkedCheckbox).val();
 			var empName = $(checkedCheckbox).attr("data-empname");
 			
-			var html = `<input type="hidden" name="empNo" value="${empNo}" >`
+			var html = `<input type="hidden" name="receiverNo" value="\${empNo}" >`
 			$("#hidden-box-receiver").append(html);
-			
-			$("#modal-form-message [name=name]").val($("#modal-form-message [name=name]").val() + ", " + empName);
+			names.push(empName)
 		}
+		$("#modal-form-message [name=name]").val(names.join(", "));
+		
 	})
 	
+	$("#btn-select-dept").click(function() {
+		var checkedCheckboxList = $("#modal-dept-list [name=deptNo]:checked");
+		var checkedCheckboxLength = checkedCheckboxList.length;
+		
+		var names = []
+		for (var index = 0; index < checkedCheckboxLength; index++) {
+			var checkedCheckbox = checkedCheckboxList[index];
+			
+			var deptNo = $(checkedCheckbox).val();
+			var deptName = $(checkedCheckbox).attr("data-deptname");
+			
+			var html = `<input type="hidden" name="receiverNo" value="\${deptNo}" >`
+			$("#hidden-box-receiver").append(html);
+			names.push(deptName)
+		}
+		$("#modal-form-message [name=name]").val(names.join(", "));
+		
+	})
 	
-	
+	$("#select-form tbody [type=button]").click(function (event) {
+		var messageNo = $(this).attr('data-message-no')
+		
+		$.get("cancelMessage.jsp", {messageNo : messageNo}, function() {})
+		
+		$(this).addClass("disabled")
+	})
 	
 	var messageFormModal = new bootstrap.Modal("#modal-form-message");
 	
 	// 유효성 검사 및 비활성화 데이터 전송
 	$("#message-form").submit(function() {
-		var $messageReceiver = $(":input[name=receiver]").val()
+		var $messageReceiver = $(":input[name=receiverNo]")
 		var $messageContent = $(":input[name=content]").val()
 		
-		if ($messageReceiver === "") {
+		if ($messageReceiver.length == 0) {
 			alert("수신자를 입력하세요.")
 			return false;
 		}
@@ -654,13 +782,20 @@ $(function() {
 		$(":checkbox[name=me]").prop("checked", false);
 		unCheckedMe()
 		messageFormModal.show();
+		var $messageReceiver = $(":input[name=receiverNo]")
 	});
 	
 	$("#btn-open-modal-2").click(function() {
 		$(":checkbox[name=me]").prop("checked", true);
 		checkedMe()
 		messageFormModal.show();
+		var $messageReceiver = $(":input[name=receiverNo]")
 	});
+	
+	$("#modal-form-message :radio[name=type]").change(function() {
+		$("#modal-form-message :input[name=name]").val("")
+		$("#hidden-box-receiver").empty()
+	})
 	
 	// 함수 정의 	
 	function checkedMe() {
@@ -671,8 +806,11 @@ $(function() {
 		$(":radio[name=type]").prop("disabled", true)
 		$(":radio[name=type][value=E]").prop("checked", true);
 		
-		$(":input[name=receiver]").prop("disabled", true)
-		$(":input[name=receiver]").val(1000)	// 사용자 이름(사용자 직원번호)
+		$(":input[name=name]").val($(":input[name=name]").attr("data-login-empname"))
+		
+		var loginEmpNo = $("#hidden-box-receiver").attr("data-login-empno")
+		var html = `<input type="hidden" name="receiverNo" value="\${loginEmpNo}" >`
+		$("#hidden-box-receiver").append(html);
 		
 		$(":button[name=address]").prop("disabled", true)
 	}
@@ -684,13 +822,15 @@ $(function() {
 		
 		$(":radio[name=type]").prop("disabled", false)
 		
-		$(":input[name=receiver]").prop("disabled", false)
-		$(":input[name=receiver]").val("")
+		$(":input[name=name]").val("")
+		
+		$("#hidden-box-receiver").empty()
 		
 		$(":button[name=address]").prop("disabled", false)
 	}
 	
 })
+
 	function submitForm(page) {
 		$("#search-form :input[name=pageNo]").val(page)
 		
@@ -774,38 +914,12 @@ $(function() {
 	});
 	
 	// 직원 리스트에서 체크된 값 메세지 보내기 모달폼으로 전달하기
-	/*
-	var checkedCheckboxList = document.querySelectorAll("#list-group-item [name=empNo]:checked");
-	var checkedCheckboxLength = checkedCheckboxList.length;
-	var hiddenBoxReceiver = document.querySelector("#hidden-box-receiver");
-	
-	var btnSelectEmp = document.querySelector("#btn-select-emp");
-	btnSelectEmp.addEventListener("click", function() {
-		
-		for (var index = 0; index < checkedCheckboxLength; index++) {
-			var checkedCheckbox = checkedCheckboxList[index];
-			
-			var empNo = checkedCheckbox.value;
-			var empName = checkedCheckbox.attr("data-empname");
-			
-			var html = `<input type="hidden" name="empNo" value="${empNo}" >`
-			hiddenBoxReceiver.insertAdjacentHTML(beforeend, html);
-			
-			var name = document.querySelector("#modal-form-message [name=name]").value
-			document.querySelector("#modal-form-message [name=name]").value = name + ", " + empName;
-		}
-	})
-	*/
-	
-	
-	/*
-	<input type="hidden" name="empNo" value="1000">
-	<input type="hidden" name="deptNo" value="100">
-	.insertAdjacentHTML()
-	*/
-	
-	
 
+	
+	// 부서 리스트에서 체크된 값 메세지 보내기 모달폼으로 전달하기
+	
+	
+	
 	
 </script>
 </body>
